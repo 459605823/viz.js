@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import Stats from 'stats.js'
-import type { CSS2DRenderer, CSS3DRenderer } from 'three-stdlib'
-import createScene, { type Options as SceneOptions } from './scene'
+import type {CSS2DRenderer, CSS3DRenderer} from 'three-stdlib'
+import createScene, {type Options as SceneOptions} from './scene'
 import createRenderer, {
   type Options as RendererOptions,
   createCSSRenderer,
@@ -11,7 +11,7 @@ import createCamera, {
   type Options as CameraOptions,
   setGUI as setCameraGUI,
 } from './camera'
-import { ComposerController, type Options as ComposerOptions } from './composer'
+import {ComposerController, type Options as ComposerOptions} from './composer'
 import {
   AssetManager,
   CacheManager,
@@ -20,8 +20,8 @@ import {
   InteractionManager,
 } from './manager'
 import type Manager from './manager/base'
-import { getBounds } from '@/utils'
-import type { KeyOf } from '@/types/utils'
+import {getBounds} from '@/utils'
+import type {KeyOf} from '@/types/utils'
 
 export interface Options {
   container: HTMLElement
@@ -142,8 +142,8 @@ export default class Pencil<
     const scene = createScene(sceneOptions)
     this.scene = scene
     // create renderer
-    const { width, height } = this.getSize()
-    const renderer = createRenderer({ ...rendererOptions, dev, width, height })
+    const {width, height} = this.getSize()
+    const renderer = createRenderer({...rendererOptions, dev, width, height})
     container.appendChild(renderer.domElement)
     this.renderer = renderer
     this.cssRenderer = createCSSRenderer(width, height, cssRenderer)
@@ -168,7 +168,7 @@ export default class Pencil<
     // handle resize
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const { width, height } = entry.contentRect
+        const {width, height} = entry.contentRect
         this.resize(width, height)
       }
     })
@@ -225,8 +225,8 @@ export default class Pencil<
   }
 
   getSize() {
-    const { width, height } = this.option.container.getBoundingClientRect()
-    return { width, height }
+    const {width, height} = this.option.container.getBoundingClientRect()
+    return {width, height}
   }
 
   getCameraPosition() {
@@ -273,9 +273,9 @@ export default class Pencil<
 
   requestAnimationFrame(
     fn: (delta?: number) => void,
-    config: { once?: boolean, duration?: number } = {},
+    config: {once?: boolean, duration?: number} = {},
   ) {
-    const { once = false, duration = Infinity } = config
+    const {once = false, duration = Infinity} = config
     let startTime: number
     const callback = (delta?: number) => {
       if (!startTime) {

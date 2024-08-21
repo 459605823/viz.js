@@ -1,10 +1,10 @@
 import * as THREE from 'three'
-import { gsap } from 'gsap'
-import { MeshLineGeometry } from './MeshLineGeometry'
-import { raycast } from './raycast'
-import type { MeshLineMaterialParameters } from './MeshLineMaterial'
-import { MeshLineMaterial } from './MeshLineMaterial'
-import { Component } from '@/manager/component'
+import {gsap} from 'gsap'
+import {MeshLineGeometry} from './MeshLineGeometry'
+import {raycast} from './raycast'
+import type {MeshLineMaterialParameters} from './MeshLineMaterial'
+import {MeshLineMaterial} from './MeshLineMaterial'
+import {Component} from '@/manager/component'
 
 type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution'> & {
   transparent?: boolean
@@ -46,7 +46,7 @@ export class Line extends Component {
       pickable,
       useCache,
     } = this.options
-    const { width, height } = this.pencil!.getSize()!
+    const {width, height} = this.pencil!.getSize()!
     const geometry = new MeshLineGeometry()
     geometry.setPoints(points, wcb)
     let material: MeshLineMaterial
@@ -85,7 +85,7 @@ export class Line extends Component {
     if (this.material) {
       gsap.fromTo(
         this.material,
-        { visibility: 0 },
+        {visibility: 0},
         {
           visibility: 1,
           duration,
@@ -98,9 +98,9 @@ export class Line extends Component {
   }
 
   animateTexture() {
-    const { animation } = this.options
+    const {animation} = this.options
     if (animation && this.material) {
-      const { duration = 3, delay = 0, repeat = -1, repeatDelay = 0 } = animation
+      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation
       this.tween = gsap.to(this.material.offset, {
         x: -1,
         duration,
@@ -113,9 +113,9 @@ export class Line extends Component {
   }
 
   animateDash() {
-    const { animation } = this.options
+    const {animation} = this.options
     if (animation && this.material) {
-      const { duration = 3, delay = 0, repeat = -1, repeatDelay = 0 } = animation
+      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation
       this.tween = gsap.to(this.material, {
         dashOffset: 0,
         duration,
@@ -128,9 +128,9 @@ export class Line extends Component {
   }
 
   render() {
-    const { animation } = this.options
+    const {animation} = this.options
     if (animation) {
-      const { animationType = 'texture' } = animation
+      const {animationType = 'texture'} = animation
       if (animationType === 'texture') {
         this.animateTexture()
       }

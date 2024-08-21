@@ -1,4 +1,4 @@
-import { Pencil } from '@/index'
+import {Pencil} from '@/index'
 
 const el = document.getElementById('app')
 el.innerHTML = 'Hello, World!'

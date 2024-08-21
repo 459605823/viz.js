@@ -34,7 +34,7 @@
   "scripts": {
     "build": "unbuild",
     "dev": "vite --host",
-    "lint": "eslint .",
+    "lint": "eslint . --fix",
     "prepublishOnly": "nr build",
     "release": "bumpp && npm publish",
     "start": "esno src/index.ts",

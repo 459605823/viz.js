@@ -7,12 +7,12 @@ function create(diffuseColor = new THREE.Color(0x0000FF), fresnelIntensity = 1.2
     vertexShader: '',
     fragmentShader: '',
     uniforms: {
-      diffuseColor: { value: diffuseColor },
-      fresnelIntensity: { value: fresnelIntensity },
-      fresnelExponent: { value: fresnelExponent },
+      diffuseColor: {value: diffuseColor},
+      fresnelIntensity: {value: fresnelIntensity},
+      fresnelExponent: {value: fresnelExponent},
     },
     transparent: true,
   })
 }
 
-export { create }
+export {create}

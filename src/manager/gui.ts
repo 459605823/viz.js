@@ -1,6 +1,6 @@
-import { Vector2, Vector3 } from 'three'
-import type { FolderApi } from 'tweakpane'
-import { Pane } from 'tweakpane'
+import {Vector2, Vector3} from 'three'
+import type {FolderApi} from 'tweakpane'
+import {Pane} from 'tweakpane'
 import Manager from './base'
 
 export interface GuiParam {
@@ -9,7 +9,7 @@ export interface GuiParam {
   min?: number
   max?: number
   step?: number
-  options?: ({ text: string, value: any } | string)[]
+  options?: ({text: string, value: any} | string)[]
   onChange?: (value: any) => void
   target?: () => any
 }
@@ -50,8 +50,8 @@ export class GuiManager extends Manager {
   }
 
   addBinding(key: string, config: GuiParam, folder?: FolderApi) {
-    const { value, label, min, max, step, options, target, onChange } = config
-    const params = target ? target() : { [key]: value }
+    const {value, label, min, max, step, options, target, onChange} = config
+    const params = target ? target() : {[key]: value}
     const isColor = key.toLowerCase().includes('color')
     const isPoint
       = params[key] instanceof Vector2 || params[key] instanceof Vector3
@@ -60,7 +60,7 @@ export class GuiManager extends Manager {
     if (isColor) {
       b = f.addBinding(params, key, {
         label: label ?? key,
-        color: { type: 'float' },
+        color: {type: 'float'},
       })
     }
     else if (isPoint) {
@@ -73,7 +73,7 @@ export class GuiManager extends Manager {
         max,
         step,
         options: options?.map(item =>
-          typeof item === 'string' ? { text: item, value: item } : item,
+          typeof item === 'string' ? {text: item, value: item} : item,
         ),
       })
     }
@@ -94,10 +94,10 @@ export class GuiManager extends Manager {
     const keys = Object.keys(params[key])
     const range = keys.reduce(
       (acc, k) => {
-        acc[k] = { min, max, step }
+        acc[k] = {min, max, step}
         return acc
       },
-      {} as Record<string, { min?: number, max?: number, step?: number }>,
+      {} as Record<string, {min?: number, max?: number, step?: number}>,
     )
     const b = f.addBinding(params, key, {
       label: label ?? key,

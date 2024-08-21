@@ -29,7 +29,7 @@ export class ComposerController {
   bloomEffect?: SelectiveBloomEffect
 
   constructor(options: Options) {
-    const { renderer, scene, camera, bloom } = options
+    const {renderer, scene, camera, bloom} = options
     const composer = new EffectComposer(renderer, {
       frameBufferType: THREE.HalfFloatType,
     })
@@ -44,8 +44,8 @@ export class ComposerController {
   }
 
   private addAAEffect() {
-    const { renderer, antialias = 'msaa', multisampling = 4 } = this.options
-    const { isWebGL2, maxSamples } = renderer.capabilities
+    const {renderer, antialias = 'msaa', multisampling = 4} = this.options
+    const {isWebGL2, maxSamples} = renderer.capabilities
     this.composer.multisampling
       = isWebGL2 && antialias === 'msaa'
         ? Math.min(multisampling, maxSamples)
@@ -54,12 +54,12 @@ export class ComposerController {
       return this.composer.addPass(new CopyPass())
     }
     else if (antialias === 'fxaa') {
-      return new FXAAEffect({ blendFunction: BlendFunction.ADD })
+      return new FXAAEffect({blendFunction: BlendFunction.ADD})
     }
   }
 
   private addBloomEffect(params?: BloomEffectOptions) {
-    const { scene, camera } = this.options
+    const {scene, camera} = this.options
     const effect = new SelectiveBloomEffect(scene, camera, {
       blendFunction: BlendFunction.ADD,
       luminanceThreshold: 0.3,

@@ -8,7 +8,7 @@ import {
   RGBELoader,
 } from 'three-stdlib'
 import * as THREE from 'three'
-import { getCache } from '../utils'
+import {getCache} from '../utils'
 import Manager from './base'
 
 type AssetType = 'gltf' | 'texture' | 'json' | 'video' | 'hdr' | 'exr'
@@ -36,7 +36,7 @@ export class AssetManager extends Manager {
 
   private assetStore = new Map<string, Promise<any>>()
 
-  private assetMap = new Map<string, AssetInfo & { loaded?: boolean }>()
+  private assetMap = new Map<string, AssetInfo & {loaded?: boolean}>()
 
   private loadingManager = new THREE.LoadingManager()
 
@@ -112,7 +112,7 @@ export class AssetManager extends Manager {
   }
 
   public async loadAsset(asset: AssetInfo) {
-    const { url, version, type } = asset
+    const {url, version, type} = asset
     if (this.assetStore.has(url)) {
       return this.assetStore.get(url)
     }
@@ -146,7 +146,7 @@ export class AssetManager extends Manager {
   }
 
   public async loadVideoTexture(asset: AssetInfo) {
-    const { url } = asset
+    const {url} = asset
     const promise = new Promise<THREE.VideoTexture>((resolve, reject) => {
       const video = document.createElement('video')
       video.src = this.getAssetUrl(url)

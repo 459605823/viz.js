@@ -1,6 +1,6 @@
-import { CSS2DObject, CSS3DObject, CSS3DSprite } from 'three-stdlib'
+import {CSS2DObject, CSS3DObject, CSS3DSprite} from 'three-stdlib'
 import type * as THREE from 'three'
-import { Component } from '@/manager/component'
+import {Component} from '@/manager/component'
 
 const objectTypes = {
   '2d': CSS2DObject,
@@ -27,7 +27,7 @@ export class Marker extends Component {
   }
 
   create() {
-    const { element, position, scale, zIndex } = this.options
+    const {element, position, scale, zIndex} = this.options
     const el = document.createElement('div')
     el.appendChild(element)
     const obj = new objectTypes[this.options.type](el)

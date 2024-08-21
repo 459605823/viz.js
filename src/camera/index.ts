@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 import CameraControls from 'camera-controls'
-import type { GuiManager } from '../manager'
-import { calculateVerticalFoV } from '@/utils/camera'
+import type {GuiManager} from '../manager'
+import {calculateVerticalFoV} from '@/utils/camera'
 
-CameraControls.install({ THREE })
+CameraControls.install({THREE})
 
 export interface Options {
   width: number

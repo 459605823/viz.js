@@ -1,5 +1,5 @@
-import type { Camera, Renderer } from 'three'
-import { InteractionManager as IM } from 'three.interactive'
+import type {Camera, Renderer} from 'three'
+import {InteractionManager as IM} from 'three.interactive'
 import Manager from './base'
 
 export class InteractionManager extends Manager {

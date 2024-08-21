@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { defineBuildConfig } from 'unbuild'
+import {defineBuildConfig} from 'unbuild'
 
 export default defineBuildConfig({
   entries: [

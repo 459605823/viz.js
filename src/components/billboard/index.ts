@@ -1,7 +1,7 @@
 import type THREE from 'three'
-import type { BillboardProps } from '@pmndrs/vanilla'
-import { Billboard as BillboardImpl } from '@pmndrs/vanilla'
-import { Component } from '@/manager/component'
+import type {BillboardProps} from '@pmndrs/vanilla'
+import {Billboard as BillboardImpl} from '@pmndrs/vanilla'
+import {Component} from '@/manager/component'
 
 export interface Options {
   object: THREE.Object3D
@@ -19,7 +19,7 @@ export class Billboard extends Component {
   }
 
   create() {
-    const { object, billboardConfig = {} } = this.options
+    const {object, billboardConfig = {}} = this.options
     const billboard = BillboardImpl()
     billboard.group.add(object)
     billboard.updateProps(billboardConfig)

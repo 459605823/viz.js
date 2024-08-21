@@ -1,11 +1,11 @@
 import * as THREE from 'three'
-import { featureCollection, union } from '@turf/turf'
-import { mergeBufferGeometries } from 'three-stdlib'
-import type { geoProjection } from 'd3-geo'
-import type { FeatureCollection, MultiPolygon, Polygon } from 'geojson'
-import { MeshLineGeometry, MeshLineMaterial } from '../index'
-import PolygonComponent, { type PolygonOptions } from './polygon'
-import { Component } from '@/manager/component'
+import {featureCollection, union} from '@turf/turf'
+import {mergeBufferGeometries} from 'three-stdlib'
+import type {geoProjection} from 'd3-geo'
+import type {FeatureCollection, MultiPolygon, Polygon} from 'geojson'
+import {MeshLineGeometry, MeshLineMaterial} from '../index'
+import PolygonComponent, {type PolygonOptions} from './polygon'
+import {Component} from '@/manager/component'
 
 export interface Options {
   projection: ReturnType<typeof geoProjection>
@@ -49,8 +49,8 @@ export class ExtrudeMap extends Component {
   }
 
   createMaterials() {
-    const { width, height } = this.pencil!.getSize()
-    const { lineMaterial, faceMaterial, sideMaterial, outlineMaterial }
+    const {width, height} = this.pencil!.getSize()
+    const {lineMaterial, faceMaterial, sideMaterial, outlineMaterial}
       = this.options
     if (!this.pencil?.cacheManager.has('ExtrudeMap')) {
       const lineMat
@@ -93,14 +93,14 @@ export class ExtrudeMap extends Component {
   }
 
   createPolygons() {
-    const { geojson, depth } = this.options
-    const { lineMat, faceMat, sideMat }
+    const {geojson, depth} = this.options
+    const {lineMat, faceMat, sideMat}
       = this.pencil!.cacheManager.get('ExtrudeMap')
     geojson.features.forEach((feature) => {
       if (!feature.geometry || !feature.properties?.name)
         return
-      const { type, coordinates } = feature.geometry
-      const { centroid, center, name } = feature.properties
+      const {type, coordinates} = feature.geometry
+      const {centroid, center, name} = feature.properties
       const props: PolygonOptions = {
         depth: depth!,
         coordinates: [],
@@ -126,13 +126,13 @@ export class ExtrudeMap extends Component {
   }
 
   createOutline() {
-    const { geojson, projection, depth } = this.options
-    const { outlineMat } = this.pencil!.cacheManager.get('ExtrudeMap')
+    const {geojson, projection, depth} = this.options
+    const {outlineMat} = this.pencil!.cacheManager.get('ExtrudeMap')
     // @ts-expect-error union type
     const outlineGeojson = geojson.features.slice(1).reduce((acc, cur) => {
       return union(featureCollection([acc, cur]))
     }, geojson.features[0])
-    const { coordinates, type } = outlineGeojson.geometry
+    const {coordinates, type} = outlineGeojson.geometry
     const geos: THREE.BufferGeometry[] = []
     const arr = type === 'MultiPolygon' ? coordinates.flat(1) : coordinates
     arr.forEach((coord) => {
@@ -156,7 +156,7 @@ export class ExtrudeMap extends Component {
   projectPoint(point: [number, number]) {
     if (!point || point.length !== 2)
       return new THREE.Vector2(0, 0)
-    const { projection } = this.options
+    const {projection} = this.options
     const [x, y] = projection(point) as [number, number]
     return new THREE.Vector2(x, -y)
   }

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import { CSS2DRenderer, CSS3DRenderer } from 'three-stdlib'
-import type { GuiManager } from '../manager'
+import {CSS2DRenderer, CSS3DRenderer} from 'three-stdlib'
+import type {GuiManager} from '../manager'
 
 export interface Options {
   width: number
@@ -45,11 +45,11 @@ export function setGUI(guiManager: GuiManager, renderer: THREE.WebGLRenderer) {
     toneMapping: {
       value: renderer.toneMapping,
       options: [
-        { text: 'None', value: THREE.NoToneMapping },
-        { text: 'Linear', value: THREE.LinearToneMapping },
-        { text: 'Reinhard', value: THREE.ReinhardToneMapping },
-        { text: 'Cineon', value: THREE.CineonToneMapping },
-        { text: 'ACESFilmic', value: THREE.ACESFilmicToneMapping },
+        {text: 'None', value: THREE.NoToneMapping},
+        {text: 'Linear', value: THREE.LinearToneMapping},
+        {text: 'Reinhard', value: THREE.ReinhardToneMapping},
+        {text: 'Cineon', value: THREE.CineonToneMapping},
+        {text: 'ACESFilmic', value: THREE.ACESFilmicToneMapping},
       ],
       onChange: (value) => {
         renderer.toneMapping = value

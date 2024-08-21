@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type { Pencil } from '..'
+import type {Pencil} from '..'
 import {
   createPromise,
   disposeObject3D,
@@ -8,7 +8,7 @@ import {
   isObjectVisible,
 } from '../utils'
 import Manager from './base'
-import type { KeyOf } from '@/types/utils'
+import type {KeyOf} from '@/types/utils'
 
 interface ComponentOptions {
   [key: string]: any
@@ -97,7 +97,7 @@ export class Component extends THREE.EventDispatcher {
   public showBoundingSphere(color = '#ff0000') {
     if (!this.pencil?.option.dev)
       return
-    const { center, radius } = this.bound.sphere
+    const {center, radius} = this.bound.sphere
     const geometry = new THREE.SphereGeometry(radius, 16, 16)
     const material = new THREE.MeshBasicMaterial({
       color: new THREE.Color(color),

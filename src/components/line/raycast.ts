@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type { MeshLineMaterial } from './MeshLineMaterial'
+import type {MeshLineMaterial} from './MeshLineMaterial'
 
 export function raycast(
   this: THREE.Mesh<THREE.BufferGeometry, MeshLineMaterial>,

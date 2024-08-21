@@ -1,4 +1,4 @@
-import { delMany, get, keys, set } from 'idb-keyval'
+import {delMany, get, keys, set} from 'idb-keyval'
 
 export async function getCache(url: string, type: 'blob' | 'json' = 'blob', version?: string) {
   const cacheKey = `${url}${version ? `@${version}` : ''}`

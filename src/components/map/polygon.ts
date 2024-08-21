@@ -1,8 +1,8 @@
 import * as THREE from 'three'
-import { mergeBufferGeometries } from 'three-stdlib'
-import type { MeshLineMaterial } from '../index'
-import { MeshLineGeometry } from '../index'
-import { disposeObject3D } from '@/utils/object3D'
+import {mergeBufferGeometries} from 'three-stdlib'
+import type {MeshLineMaterial} from '../index'
+import {MeshLineGeometry} from '../index'
+import {disposeObject3D} from '@/utils/object3D'
 
 export interface PolygonOptions {
   depth: number
@@ -37,22 +37,22 @@ const uvGenerator = {
       const points = geometry.parameters.shapes.getPoints() as THREE.Vector2[]
       bb = {
         minX: Math.min(
-          ...points.map(({ x }) => {
+          ...points.map(({x}) => {
             return x
           }),
         ),
         maxX: Math.max(
-          ...points.map(({ x }) => {
+          ...points.map(({x}) => {
             return x
           }),
         ),
         minY: Math.min(
-          ...points.map(({ y }) => {
+          ...points.map(({y}) => {
             return y
           }),
         ),
         maxY: Math.max(
-          ...points.map(({ y }) => {
+          ...points.map(({y}) => {
             return y
           }),
         ),
@@ -120,7 +120,7 @@ export default class Polygon extends THREE.Object3D {
   }
 
   get center() {
-    const { center, depth } = this.userData
+    const {center, depth} = this.userData
     return new THREE.Vector3(center.x, center.y, depth)
   }
 

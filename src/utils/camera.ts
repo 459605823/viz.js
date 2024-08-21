@@ -1,6 +1,6 @@
-import { MathUtils } from 'three'
+import {MathUtils} from 'three'
 
-const { DEG2RAD, RAD2DEG } = MathUtils
+const {DEG2RAD, RAD2DEG} = MathUtils
 
 // Converts horizontal FoV to vertical FoV.
 export function calculateVerticalFoV(horizontalFoV: number, aspect = 16 / 9) {

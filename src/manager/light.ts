@@ -9,7 +9,7 @@ export class LightManager extends Manager {
     helper?: THREE.DirectionalLightHelper
   }[] = []
 
-  spotLights: { light: THREE.SpotLight, helper?: THREE.SpotLightHelper }[] = []
+  spotLights: {light: THREE.SpotLight, helper?: THREE.SpotLightHelper}[] = []
 
   hemiSphereLights: {
     light: THREE.HemisphereLight
@@ -161,7 +161,7 @@ export class LightManager extends Manager {
       folder.expanded = false
     }
 
-    this.spotLights.push({ light, helper: helperObj })
+    this.spotLights.push({light, helper: helperObj})
     return light
   }
 
@@ -241,7 +241,7 @@ export class LightManager extends Manager {
       folder.expanded = false
     }
 
-    this.dirLights.push({ light, helper: helperObj })
+    this.dirLights.push({light, helper: helperObj})
     return light
   }
 
@@ -316,21 +316,21 @@ export class LightManager extends Manager {
       folder.expanded = false
     }
 
-    this.hemiSphereLights.push({ light, helper: helperObj })
+    this.hemiSphereLights.push({light, helper: helperObj})
     return light
   }
 
   dispose() {
     super.dispose()
-    this.dirLights.forEach(({ light, helper }) => {
+    this.dirLights.forEach(({light, helper}) => {
       light.dispose()
       helper?.dispose()
     })
-    this.spotLights.forEach(({ light, helper }) => {
+    this.spotLights.forEach(({light, helper}) => {
       light.dispose()
       helper?.dispose()
     })
-    this.hemiSphereLights.forEach(({ light, helper }) => {
+    this.hemiSphereLights.forEach(({light, helper}) => {
       light.dispose()
       helper?.dispose()
     })

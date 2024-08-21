@@ -2,7 +2,7 @@ import * as THREE from 'three'
 // import vertexShader from './shader/vertex.glsl'
 // import fragmentShader from './shader/fragment.glsl'
 // import spark from './spark.png'
-import { Component } from '@/manager/component'
+import {Component} from '@/manager/component'
 
 function getPositionInSphere(radius: number) {
   const phi = Math.random() * Math.PI
@@ -40,7 +40,7 @@ export class Particle extends Component {
   }
 
   create() {
-    const { sphere } = this.options
+    const {sphere} = this.options
     if (sphere) {
       this.object3D.add(this.createParticleBall(sphere.radius, sphere.count))
     }
