@@ -11,8 +11,11 @@ export default defineBuildConfig({
     '@': path.resolve(__dirname, 'src'),
   },
   rollup: {
-    commonjs: false,
     emitCJS: true,
+    commonjs: {
+      exclude: 'node_modules',
+      extensions: ['.mjs', '.cjs', '.js', '.jsx'],
+    },
     inlineDependencies: true,
     alias: {
       entries: {
