@@ -1,7 +1,6 @@
-import type {
+import {
   BlendFunction,
-
-  BloomEffectOptions,
+  type BloomEffectOptions,
   CopyPass,
   type Effect,
   EffectComposer,
