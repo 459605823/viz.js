@@ -1,5 +1,6 @@
 import path from 'node:path'
 import {defineBuildConfig} from 'unbuild'
+import image from '@rollup/plugin-image'
 
 export default defineBuildConfig({
   entries: [
@@ -16,11 +17,16 @@ export default defineBuildConfig({
       exclude: 'node_modules',
       extensions: ['.mjs', '.cjs', '.js', '.jsx'],
     },
+    esbuild: {
+      minify: true,
+    },
     inlineDependencies: true,
-    alias: {
-      entries: {
-        '@': path.resolve(__dirname, 'src'),
-      },
+  },
+  hooks: {
+    'rollup:options': (_, options) => {
+      if (Array.isArray(options.plugins)) {
+        options.plugins.push(image())
+      }
     },
   },
 })

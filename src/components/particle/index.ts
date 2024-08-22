@@ -1,7 +1,6 @@
 import * as THREE from 'three'
-// import vertexShader from './shader/vertex.glsl'
-// import fragmentShader from './shader/fragment.glsl'
-// import spark from './spark.png'
+import {fragment, vertex} from './shader'
+import spark from './spark.png'
 import {Component} from '@/manager/component'
 
 function getPositionInSphere(radius: number) {
@@ -63,14 +62,14 @@ export class Particle extends Component {
     geometry.setAttribute('vertexColor', new THREE.BufferAttribute(colors, 3))
     geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
     const material = new THREE.ShaderMaterial({
-      vertexShader: '',
-      fragmentShader: '',
+      vertexShader: vertex,
+      fragmentShader: fragment,
       uniforms: {
         color: {
           value: new THREE.Color(0xFFFFFF),
         },
         pointTexture: {
-          value: new THREE.TextureLoader().load('spark'),
+          value: new THREE.TextureLoader().load(spark),
         },
       },
       blending: THREE.AdditiveBlending,

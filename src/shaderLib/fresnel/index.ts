@@ -1,11 +1,10 @@
-// import vertexShader from './vertex.glsl';
-// import fragmentShader from './fragment.glsl';
 import * as THREE from 'three'
+import {fragment, vertex} from './shader'
 
 function create(diffuseColor = new THREE.Color(0x0000FF), fresnelIntensity = 1.2, fresnelExponent = 3.5) {
   return new THREE.ShaderMaterial({
-    vertexShader: '',
-    fragmentShader: '',
+    vertexShader: vertex,
+    fragmentShader: fragment,
     uniforms: {
       diffuseColor: {value: diffuseColor},
       fresnelIntensity: {value: fresnelIntensity},
