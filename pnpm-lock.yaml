@@ -11,21 +11,9 @@ importers:
       '@pmndrs/vanilla':
         specifier: ^1.19.1
         version: 1.19.1(three@0.164.1)
-      '@turf/turf':
-        specifier: ^7.0.0
-        version: 7.1.0
       '@tweakpane/core':
         specifier: ^2.0.3
         version: 2.0.4
-      '@types/d3-geo':
-        specifier: ^3.1.0
-        version: 3.1.0
-      '@types/geojson':
-        specifier: ^7946.0.14
-        version: 7946.0.14
-      '@types/stats.js':
-        specifier: ^0.17.3
-        version: 0.17.3
       '@types/three':
         specifier: ^0.164.0
         version: 0.164.1
@@ -44,9 +32,6 @@ importers:
       three-stdlib:
         specifier: ^2.30.0
         version: 2.32.2(three@0.164.1)
-      three.interactive:
-        specifier: ^1.7.0
-        version: 1.8.0(three@0.164.1)
       tweakpane:
         specifier: ^4.0.3
         version: 4.0.4
@@ -63,9 +48,21 @@ importers:
       '@rollup/plugin-image':
         specifier: ^3.0.3
         version: 3.0.3(rollup@3.29.4)
+      '@turf/turf':
+        specifier: ^7.0.0
+        version: 7.1.0
+      '@types/d3-geo':
+        specifier: ^3.1.0
+        version: 3.1.0
+      '@types/geojson':
+        specifier: ^7946.0.14
+        version: 7946.0.14
       '@types/node':
         specifier: ^20.14.11
         version: 20.14.11
+      '@types/stats.js':
+        specifier: ^0.17.3
+        version: 0.17.3
       bumpp:
         specifier: ^9.4.1
         version: 9.4.1
@@ -93,6 +90,9 @@ importers:
       stats.js:
         specifier: ^0.17.0
         version: 0.17.0
+      three.interactive:
+        specifier: ^1.7.0
+        version: 1.8.0(three@0.164.1)
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
