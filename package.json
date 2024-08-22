@@ -37,7 +37,8 @@
   "scripts": {
     "build": "unbuild",
     "dev": "pnpm run -C playground dev",
-    "lint": "eslint . --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepublishOnly": "nr build",
     "release": "bumpp && npm publish",
     "test": "vitest",
