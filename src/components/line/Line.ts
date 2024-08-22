@@ -46,18 +46,18 @@ export class Line extends Component {
       pickable,
       useCache,
     } = this.options
-    const {width, height} = this.pencil!.getSize()!
+    const {width, height} = this.viz!.getSize()!
     const geometry = new MeshLineGeometry()
     geometry.setPoints(points, wcb)
     let material: MeshLineMaterial
     if (useCache) {
-      material = this.pencil?.cacheManager.get('lineMaterial')
+      material = this.viz?.cacheManager.get('lineMaterial')
       if (!material) {
         material = new MeshLineMaterial({
           ...materialParams,
           resolution: new THREE.Vector2(width, height),
         })
-        this.pencil?.cacheManager.set('lineMaterial', material)
+        this.viz?.cacheManager.set('lineMaterial', material)
       }
     }
     else {

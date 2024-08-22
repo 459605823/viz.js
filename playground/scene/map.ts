@@ -1,5 +1,5 @@
 import {geoEquirectangular} from 'd3-geo'
-import {ComponentManager, ExtrudeMap, Pencil, THREE} from '@/index'
+import {ComponentManager, ExtrudeMap, Viz, THREE} from '@/index'
 
 const projection = geoEquirectangular()
   .center([0, 0])
@@ -12,10 +12,10 @@ const componentManager = new ComponentManager({
 })
 
 export default class Map {
-  pencil: Pencil
+  viz: Viz
 
   constructor(el: HTMLElement) {
-    const pencil = new Pencil(
+    const viz = new Viz(
       {
         dev: true,
         container: el,
@@ -24,19 +24,19 @@ export default class Map {
         componentManager,
       },
     )
-    pencil.assetManager.setAsset([
+    viz.assetManager.setAsset([
       {
         type: 'json',
         url: '/geojson/world.json',
       },
     ])
-    this.pencil = pencil
+    this.viz = viz
   }
 
   async init() {
-    const pencil = this.pencil
-    await pencil.assetManager.load()
-    const geojson = await pencil.assetManager.getAsset('/geojson/world.json')
+    const viz = this.viz
+    await viz.assetManager.load()
+    const geojson = await viz.assetManager.getAsset('/geojson/world.json')
     const map = await componentManager.draw('ExtrudeMap', {
       projection,
       depth: 0.1,
@@ -44,8 +44,8 @@ export default class Map {
       geojson: geojson as any,
     })
     await Promise.all(componentManager.componentPromise)
-    pencil.start()
-    await pencil.cameraControl?.fitToBox(map.object3D, true, {
+    viz.start()
+    await viz.cameraControl?.fitToBox(map.object3D, true, {
       cover: false,
       paddingBottom: 1,
       paddingLeft: 1,
@@ -58,13 +58,13 @@ export default class Map {
       new THREE.MeshBasicMaterial({color: 0xFF0000, depthTest: false}),
     )
     mesh.position.copy(china!.center)
-    pencil.scene?.add(mesh)
+    viz.scene?.add(mesh)
     console.log(map.polygonMap)
     console.log('china', china)
-    pencil.cameraControl?.fitToSphere(mesh, false)
+    viz.cameraControl?.fitToSphere(mesh, false)
   }
 
   dispose() {
-    this.pencil.dispose()
+    this.viz.dispose()
   }
 }

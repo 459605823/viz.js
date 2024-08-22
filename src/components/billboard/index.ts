@@ -32,7 +32,7 @@ export class Billboard extends Component {
   }
 
   update() {
-    this.billboard?.update(this.pencil!.camera)
+    this.billboard?.update(this.viz!.camera)
   }
 
   dispose() {

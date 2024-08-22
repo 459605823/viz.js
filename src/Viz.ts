@@ -44,7 +44,7 @@ const defaultOptions: Partial<Options> = {
   axis: true,
 }
 
-export default class Pencil<
+export default class Viz<
   T extends Record<string, Manager> = Record<string, Manager>,
 > {
   option: Options

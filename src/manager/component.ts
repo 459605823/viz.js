@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type {Pencil} from '..'
+import type {Viz} from '..'
 import {
   createPromise,
   disposeObject3D,
@@ -26,7 +26,7 @@ export class Component extends THREE.EventDispatcher {
 
   private manager?: ComponentManager<any>
 
-  pencil?: Pencil
+  viz?: Viz
 
   userData: Record<string, any> = {}
 
@@ -38,8 +38,8 @@ export class Component extends THREE.EventDispatcher {
   get visible() {
     return isObjectVisible(
       this.object3D,
-      this.pencil!.camera,
-      this.pencil!.raycaster,
+      this.viz!.camera,
+      this.viz!.raycaster,
       this.manager!.object3Ds,
     )
   }
@@ -85,17 +85,17 @@ export class Component extends THREE.EventDispatcher {
   }
 
   public showBoundingBox(color = '#ff0000') {
-    if (!this.pencil?.option.dev)
+    if (!this.viz?.option.dev)
       return
     const helper = new THREE.Box3Helper(
       this.bound.bbox,
       new THREE.Color(color),
     )
-    this.pencil?.scene?.add(helper)
+    this.viz?.scene?.add(helper)
   }
 
   public showBoundingSphere(color = '#ff0000') {
-    if (!this.pencil?.option.dev)
+    if (!this.viz?.option.dev)
       return
     const {center, radius} = this.bound.sphere
     const geometry = new THREE.SphereGeometry(radius, 16, 16)
@@ -105,13 +105,13 @@ export class Component extends THREE.EventDispatcher {
     })
     const sphere = new THREE.Mesh(geometry, material)
     sphere.position.copy(center)
-    this.pencil?.scene?.add(sphere)
+    this.viz?.scene?.add(sphere)
   }
 
   public dispose() {
     this.object3D.removeFromParent()
     disposeObject3D(this.object3D)
-    this.pencil = undefined
+    this.viz = undefined
     this.manager = undefined
   }
 }
@@ -189,7 +189,7 @@ export class ComponentManager<
     if (!ComponentConstructor) {
       throw new Error(`未找到名为${name}的组件`)
     }
-    const pencil = this.pencil!
+    const viz = this.viz!
     const key = options.key
     let id = `${name}#${THREE.MathUtils.generateUUID()}`
     if (key) {
@@ -198,7 +198,7 @@ export class ComponentManager<
     const instance = new ComponentConstructor(options)
     instance.id = id
     this.instances.push(instance)
-    instance.pencil = pencil
+    instance.viz = viz
     instance.manager = this
     try {
       await instance.create()
@@ -208,7 +208,7 @@ export class ComponentManager<
     }
     instance.render()
     instance.pm.resolve()
-    parent = parent || pencil.scene
+    parent = parent || viz.scene
     parent?.add(instance.object3D)
     return instance
   }

@@ -68,7 +68,7 @@ export class AssetManager extends Manager {
   }
 
   get staticPath() {
-    return this.pencil?.option.staticPath || ''
+    return this.viz?.option.staticPath || ''
   }
 
   constructor() {
@@ -173,8 +173,8 @@ export class AssetManager extends Manager {
       return
     }
     asset.loaded = true
-    this.pencil?.eventManager.emit('progress', this.progress)
-    this.pencil?.eventManager.emit('loaded', this.isLoaded)
+    this.viz?.eventManager.emit('progress', this.progress)
+    this.viz?.eventManager.emit('loaded', this.isLoaded)
   }
 
   public async getAsset(url: `${string}.glb`): Promise<GLTF>

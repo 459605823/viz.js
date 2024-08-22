@@ -49,10 +49,10 @@ export class ExtrudeMap extends Component {
   }
 
   createMaterials() {
-    const {width, height} = this.pencil!.getSize()
+    const {width, height} = this.viz!.getSize()
     const {lineMaterial, faceMaterial, sideMaterial, outlineMaterial}
       = this.options
-    if (!this.pencil?.cacheManager.has('ExtrudeMap')) {
+    if (!this.viz?.cacheManager.has('ExtrudeMap')) {
       const lineMat
         = lineMaterial
         ?? new MeshLineMaterial({
@@ -83,7 +83,7 @@ export class ExtrudeMap extends Component {
         ?? new THREE.MeshBasicMaterial({
           color: '#004078',
         })
-      this.pencil?.cacheManager.set('ExtrudeMap', {
+      this.viz?.cacheManager.set('ExtrudeMap', {
         lineMat,
         outlineMat,
         faceMat,
@@ -95,7 +95,7 @@ export class ExtrudeMap extends Component {
   createPolygons() {
     const {geojson, depth} = this.options
     const {lineMat, faceMat, sideMat}
-      = this.pencil!.cacheManager.get('ExtrudeMap')
+      = this.viz!.cacheManager.get('ExtrudeMap')
     geojson.features.forEach((feature) => {
       if (!feature.geometry || !feature.properties?.name)
         return
@@ -127,7 +127,7 @@ export class ExtrudeMap extends Component {
 
   createOutline() {
     const {geojson, projection, depth} = this.options
-    const {outlineMat} = this.pencil!.cacheManager.get('ExtrudeMap')
+    const {outlineMat} = this.viz!.cacheManager.get('ExtrudeMap')
     // @ts-expect-error union type
     const outlineGeojson = geojson.features.slice(1).reduce((acc, cur) => {
       return union(featureCollection([acc, cur]))

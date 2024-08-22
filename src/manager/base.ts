@@ -1,12 +1,12 @@
-import type Pencil from '@/pencil'
+import type Viz from '@/Viz'
 
 export default class Manager {
-  pencil?: Pencil
+  viz?: Viz
 
   name = 'Manager'
 
-  install(pencil: Pencil) {
-    this.pencil = pencil
+  install(viz: Viz) {
+    this.viz = viz
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -16,6 +16,6 @@ export default class Manager {
   setSize(width: number, height: number) {}
 
   dispose() {
-    this.pencil = undefined
+    this.viz = undefined
   }
 }

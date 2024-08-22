@@ -1,4 +1,4 @@
-import {ComponentManager, Line, Pencil, THREE} from '@/index'
+import {ComponentManager, Line, Viz, THREE} from '@/index'
 
 const componentManager = new ComponentManager({
   Line,
@@ -23,10 +23,10 @@ function createLineTexture(lineColor: string, lightColor: string, lightLength = 
 }
 
 export default class Map {
-  pencil: Pencil
+  viz: Viz
 
   constructor(el: HTMLElement) {
-    const pencil = new Pencil(
+    const viz = new Viz(
       {
         dev: true,
         container: el,
@@ -41,11 +41,11 @@ export default class Map {
         componentManager,
       },
     )
-    this.pencil = pencil
+    this.viz = viz
   }
 
   async init() {
-    const pencil = this.pencil
+    const viz = this.viz
     const curve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(-1, 0, 0),
       new THREE.Vector3(0, 1, 0),
@@ -63,7 +63,7 @@ export default class Map {
       new THREE.MeshBasicMaterial({map: texture_test}),
     )
     plane.position.set(0, 0, 0)
-    pencil.scene?.add(plane)
+    viz.scene?.add(plane)
     const line = await componentManager.draw('Line', {
       points: curve.getPoints(100),
       material: {
@@ -83,7 +83,7 @@ export default class Map {
         duration: 2,
       },
     })
-    pencil.guiManager?.addFolder('texture', {
+    viz.guiManager?.addFolder('texture', {
       x: {
         value: 0,
         min: 0,
@@ -108,10 +108,10 @@ export default class Map {
     })
     line.animateIn(1)
     light.object3D.position.x = 4
-    pencil.start()
+    viz.start()
   }
 
   dispose() {
-    this.pencil.dispose()
+    this.viz.dispose()
   }
 }

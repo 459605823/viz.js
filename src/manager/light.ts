@@ -22,7 +22,7 @@ export class LightManager extends Manager {
 
   createAmbientLight(color = 0xFFFFFF, instensity = 1) {
     const light = new THREE.AmbientLight(color, instensity)
-    this.pencil?.scene?.add(light)
+    this.viz?.scene?.add(light)
     return light
   }
 
@@ -60,16 +60,16 @@ export class LightManager extends Manager {
     )
     light.position.copy(position!)
     light.target.position.copy(target!)
-    this.pencil?.scene?.add(light)
-    this.pencil?.scene?.add(light.target)
+    this.viz?.scene?.add(light)
+    this.viz?.scene?.add(light.target)
     let helperObj: THREE.SpotLightHelper | undefined
     if (helper) {
       helperObj = new THREE.SpotLightHelper(light)
-      this.pencil?.scene?.add(helperObj)
+      this.viz?.scene?.add(helperObj)
     }
 
-    if (this.pencil?.guiManager) {
-      const folder = this.pencil.guiManager.addFolder(
+    if (this.viz?.guiManager) {
+      const folder = this.viz.guiManager.addFolder(
         `聚光灯-${this.spotLights.length}`,
         {
           color: {
@@ -184,16 +184,16 @@ export class LightManager extends Manager {
     const light = new THREE.DirectionalLight(color, intensity)
     light.position.copy(position)
     light.target.position.copy(target)
-    this.pencil?.scene?.add(light)
-    this.pencil?.scene?.add(light.target)
+    this.viz?.scene?.add(light)
+    this.viz?.scene?.add(light.target)
     let helperObj: THREE.DirectionalLightHelper | undefined
     if (helper) {
       helperObj = new THREE.DirectionalLightHelper(light)
-      this.pencil?.scene?.add(helperObj)
+      this.viz?.scene?.add(helperObj)
     }
 
-    if (this.pencil?.guiManager) {
-      const folder = this.pencil.guiManager.addFolder(
+    if (this.viz?.guiManager) {
+      const folder = this.viz.guiManager.addFolder(
         `平行光-${this.dirLights.length}`,
         {
           color: {
@@ -263,15 +263,15 @@ export class LightManager extends Manager {
     } = parameters
     const light = new THREE.HemisphereLight(skyColor, groundColor, intensity)
     light.position.copy(position)
-    this.pencil?.scene?.add(light)
+    this.viz?.scene?.add(light)
     let helperObj: THREE.HemisphereLightHelper | undefined
     if (helper) {
       helperObj = new THREE.HemisphereLightHelper(light, 5)
-      this.pencil?.scene?.add(helperObj)
+      this.viz?.scene?.add(helperObj)
     }
 
-    if (this.pencil?.guiManager) {
-      const folder = this.pencil.guiManager.addFolder(
+    if (this.viz?.guiManager) {
+      const folder = this.viz.guiManager.addFolder(
         `半球光-${this.hemiSphereLights.length}`,
         {
           skyColor: {

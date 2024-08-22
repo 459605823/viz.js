@@ -1,14 +1,14 @@
-import {Billboard, ComponentManager, Pencil, THREE} from '@/index'
+import {Billboard, ComponentManager, Viz, THREE} from '@/index'
 
 const componentManager = new ComponentManager({
   Billboard,
 })
 
 export default class Map {
-  pencil: Pencil
+  viz: Viz
 
   constructor(el: HTMLElement) {
-    const pencil = new Pencil(
+    const viz = new Viz(
       {
         dev: true,
         container: el,
@@ -17,12 +17,12 @@ export default class Map {
         componentManager,
       },
     )
-    this.pencil = pencil
+    this.viz = viz
   }
 
   async init() {
-    const pencil = this.pencil
-    const texture = (await pencil.assetManager.loadAsset({
+    const viz = this.viz
+    const texture = (await viz.assetManager.loadAsset({
       type: 'texture',
       url: '/uv_grid_opengl.jpg',
     })) as THREE.Texture
@@ -32,10 +32,10 @@ export default class Map {
     await componentManager.draw('Billboard', {
       object: mesh,
     })
-    pencil.start()
+    viz.start()
   }
 
   dispose() {
-    this.pencil.dispose()
+    this.viz.dispose()
   }
 }
