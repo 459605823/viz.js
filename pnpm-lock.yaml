@@ -14,27 +14,30 @@ importers:
       '@turf/turf':
         specifier: ^7.0.0
         version: 7.1.0
+      '@tweakpane/core':
+        specifier: ^2.0.3
+        version: 2.0.4
+      '@types/d3-geo':
+        specifier: ^3.1.0
+        version: 3.1.0
+      '@types/geojson':
+        specifier: ^7946.0.14
+        version: 7946.0.14
+      '@types/stats.js':
+        specifier: ^0.17.3
+        version: 0.17.3
+      '@types/three':
+        specifier: ^0.164.0
+        version: 0.164.1
       camera-controls:
         specifier: ^2.8.3
         version: 2.9.0(three@0.164.1)
-      d3-geo:
-        specifier: ^3.1.1
-        version: 3.1.1
       gsap:
         specifier: ^3.12.5
         version: 3.12.5
-      idb-keyval:
-        specifier: ^6.2.1
-        version: 6.2.1
-      mitt:
-        specifier: ^3.0.1
-        version: 3.0.1
       postprocessing:
         specifier: ^6.35.5
         version: 6.36.0(three@0.164.1)
-      stats.js:
-        specifier: ^0.17.0
-        version: 0.17.0
       three:
         specifier: ^0.164.1
         version: 0.164.1
@@ -60,24 +63,9 @@ importers:
       '@rollup/plugin-image':
         specifier: ^3.0.3
         version: 3.0.3(rollup@3.29.4)
-      '@tweakpane/core':
-        specifier: ^2.0.3
-        version: 2.0.4
-      '@types/d3-geo':
-        specifier: ^3.1.0
-        version: 3.1.0
-      '@types/geojson':
-        specifier: ^7946.0.14
-        version: 7946.0.14
       '@types/node':
         specifier: ^20.14.11
         version: 20.14.11
-      '@types/stats.js':
-        specifier: ^0.17.3
-        version: 0.17.3
-      '@types/three':
-        specifier: ^0.164.0
-        version: 0.164.1
       bumpp:
         specifier: ^9.4.1
         version: 9.4.1
@@ -87,15 +75,24 @@ importers:
       esno:
         specifier: ^4.7.0
         version: 4.7.0
+      idb-keyval:
+        specifier: ^6.2.1
+        version: 6.2.1
       lint-staged:
         specifier: ^15.2.7
         version: 15.2.7
+      mitt:
+        specifier: ^3.0.1
+        version: 3.0.1
       pnpm:
         specifier: ^9.5.0
         version: 9.5.0
       simple-git-hooks:
         specifier: ^2.11.1
         version: 2.11.1
+      stats.js:
+        specifier: ^0.17.0
+        version: 0.17.0
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
@@ -1783,16 +1780,8 @@ packages:
   d3-array@1.2.4:
     resolution: {integrity: sha512-KHW6M86R+FUPYGb3R5XiYjXPq7VzwxZ22buHhAEVG5ztoEcZZMLov530mmccaqA1GghZArjQV46fuc8kUqhhHw==}
 
-  d3-array@3.2.4:
-    resolution: {integrity: sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==}
-    engines: {node: '>=12'}
-
   d3-geo@1.7.1:
     resolution: {integrity: sha512-O4AempWAr+P5qbk2bC2FuN/sDW4z+dN2wDf9QV3bxQt4M5HfOEeXLgJ/UKQW0+o1Dj8BE+L5kiDbdWUMjsmQpw==}
-
-  d3-geo@3.1.1:
-    resolution: {integrity: sha512-637ln3gXKXOwhalDzinUgY83KzNWZRKbYubaG+fGVuc/dxO64RRljtCTnf5ecMyE1RIdtqpkVcq0IbtU2S8j2Q==}
-    engines: {node: '>=12'}
 
   d3-voronoi@1.1.2:
     resolution: {integrity: sha512-RhGS1u2vavcO7ay7ZNAPo4xeDh/VYeGof3x5ZLJBQgYhLegxr3s5IykvWmJ94FTU6mcbtp4sloqZ54mP6R4Utw==}
@@ -2324,10 +2313,6 @@ packages:
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
-
-  internmap@2.0.3:
-    resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
-    engines: {node: '>=12'}
 
   is-alphabetical@1.0.4:
     resolution: {integrity: sha512-DwzsA04LQ10FHTZuL0/grVDk4rFoVH1pjAToYwBrHSxcrBIGQuXrQMtD5U1b0U2XVgKZCTLLP8u2Qxqhy3l2Vg==}
@@ -5889,17 +5874,9 @@ snapshots:
 
   d3-array@1.2.4: {}
 
-  d3-array@3.2.4:
-    dependencies:
-      internmap: 2.0.3
-
   d3-geo@1.7.1:
     dependencies:
       d3-array: 1.2.4
-
-  d3-geo@3.1.1:
-    dependencies:
-      d3-array: 3.2.4
 
   d3-voronoi@1.1.2: {}
 
@@ -6565,8 +6542,6 @@ snapshots:
       wrappy: 1.0.2
 
   inherits@2.0.4: {}
-
-  internmap@2.0.3: {}
 
   is-alphabetical@1.0.4: {}
 
