@@ -1,0 +1,117 @@
+import {ComponentManager, Line, Pencil, THREE} from '@/index'
+
+const componentManager = new ComponentManager({
+  Line,
+})
+
+function createLineTexture(lineColor: string, lightColor: string, lightLength = 0.4) {
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 1
+  const ctx = canvas.getContext('2d')!
+  const gradient = ctx.createLinearGradient(0, 0, 256, 1)
+  gradient.addColorStop(0, lineColor)
+  gradient.addColorStop(lightLength / 2, lightColor)
+  gradient.addColorStop(lightLength, lineColor)
+  gradient.addColorStop(1, lineColor)
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, 256, 1)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+  return texture
+}
+
+export default class Map {
+  pencil: Pencil
+
+  constructor(el: HTMLElement) {
+    const pencil = new Pencil(
+      {
+        dev: true,
+        container: el,
+        scene: {
+          background: new THREE.Color('#000'),
+        },
+        composer: {
+          bloom: true,
+        },
+      },
+      {
+        componentManager,
+      },
+    )
+    this.pencil = pencil
+  }
+
+  async init() {
+    const pencil = this.pencil
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-1, 0, 0),
+      new THREE.Vector3(0, 1, 0),
+      new THREE.Vector3(1, 0, 0),
+    ])
+    const length = curve.getLength()
+    const texture = createLineTexture('#ff2900', '#ffcb00', 0.4)
+    const texture_test = new THREE.TextureLoader().load('/uv_grid_opengl.jpg')
+    texture_test.wrapS = THREE.RepeatWrapping
+    texture_test.wrapT = THREE.RepeatWrapping
+    texture_test.repeat.set(2, 2)
+    texture_test.colorSpace = THREE.SRGBColorSpace
+    const plane = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({map: texture_test}),
+    )
+    plane.position.set(0, 0, 0)
+    pencil.scene?.add(plane)
+    const line = await componentManager.draw('Line', {
+      points: curve.getPoints(100),
+      material: {
+        sizeAttenuation: 1,
+        transparent: true,
+        lineWidth: 0.1,
+        color: '#fff',
+        map: texture_test,
+        useMap: 1,
+        visibility: 0,
+        dashArray: length,
+        dashOffset: length,
+        dashRatio: 0.8,
+      },
+      animation: {
+        animationType: 'dash',
+        duration: 2,
+      },
+    })
+    pencil.guiManager?.addFolder('texture', {
+      x: {
+        value: 0,
+        min: 0,
+        max: 1,
+        step: 0.01,
+        target: () => texture_test.offset,
+      },
+    })
+    const light = await componentManager.draw('Line', {
+      points: curve.getPoints(100),
+      material: {
+        color: '#ffcb00',
+        sizeAttenuation: 1,
+        transparent: true,
+        lineWidth: 0.1,
+        map: texture,
+        useMap: 1,
+      },
+      animation: {
+        duration: 1,
+      },
+    })
+    line.animateIn(1)
+    light.object3D.position.x = 4
+    pencil.start()
+  }
+
+  dispose() {
+    this.pencil.dispose()
+  }
+}

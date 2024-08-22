@@ -1,6 +1,18 @@
-import {Pencil} from '@/index'
+import './style.css'
+import Scene from './scene/map'
 
 const el = document.getElementById('app')
-el!.innerHTML = 'Hello, World!'
+let scene: Scene
 
-console.log(Pencil)
+async function init() {
+  if (el) {
+    scene = new Scene(el)
+    await scene.init()
+  }
+}
+
+init()
+
+window.onbeforeunload = () => {
+  scene.dispose()
+}

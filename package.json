@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "dev": "vite --host",
+    "dev": "pnpm run -C playground dev",
     "lint": "eslint . --fix",
     "prepublishOnly": "nr build",
     "release": "bumpp && npm publish",
