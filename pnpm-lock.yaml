@@ -111,6 +111,7 @@ importers:
       d3-geo:
         specifier: ^3.1.1
         version: 3.1.1
+      vite: '*'
 
 packages:
 
