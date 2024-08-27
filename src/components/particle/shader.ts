@@ -11,7 +11,7 @@ void main() {
   gl_PointSize = size * ( 300.0 / -mvPosition.z );
   gl_Position = projectionMatrix * mvPosition;
 }
-`
+`;
 
 // language=GLSL
 export const fragment = /* GLSL */ `
@@ -25,4 +25,4 @@ void main() {
   gl_FragColor = vec4( color * vColor, 1.0 );
   gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
 }
-`
+`;

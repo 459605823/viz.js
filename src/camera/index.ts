@@ -1,20 +1,20 @@
-import * as THREE from 'three'
-import CameraControls from 'camera-controls'
-import type {GuiManager} from '../manager'
-import {calculateVerticalFoV} from '@/utils/camera'
+import * as THREE from 'three';
+import CameraControls from 'camera-controls';
+import type {GuiManager} from '../manager';
+import {calculateVerticalFoV} from '@/utils/camera';
 
-CameraControls.install({THREE})
+CameraControls.install({THREE});
 
 export interface Options {
-  width: number
-  height: number
-  domElement: HTMLElement
-  fov?: number
-  near?: number
-  far?: number
-  focalLength?: number
-  position?: THREE.Vector3
-  target?: THREE.Vector3
+  width: number;
+  height: number;
+  domElement: HTMLElement;
+  fov?: number;
+  near?: number;
+  far?: number;
+  focalLength?: number;
+  position?: THREE.Vector3;
+  target?: THREE.Vector3;
 }
 
 export default (options: Options) => {
@@ -27,12 +27,12 @@ export default (options: Options) => {
     far = 1000,
     position = new THREE.Vector3(0, 0, 10),
     target = new THREE.Vector3(0, 0, 0),
-  } = options
-  const camera = new THREE.PerspectiveCamera(fov, width / height, near, far)
+  } = options;
+  const camera = new THREE.PerspectiveCamera(fov, width / height, near, far);
   if (options.focalLength) {
-    camera.setFocalLength(options.focalLength)
+    camera.setFocalLength(options.focalLength);
   }
-  const cameraControls = new CameraControls(camera, domElement)
+  const cameraControls = new CameraControls(camera, domElement);
   cameraControls.setLookAt(
     position.x,
     position.y,
@@ -40,9 +40,9 @@ export default (options: Options) => {
     target.x,
     target.y,
     target.z,
-  )
-  return cameraControls
-}
+  );
+  return cameraControls;
+};
 
 export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
   const folder = guiManager?.addFolder('Camera', {
@@ -52,8 +52,8 @@ export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
       max: 500,
       step: 0.1,
       onChange: (value) => {
-        const position = cameraControl.getPosition(new THREE.Vector3())
-        cameraControl.setPosition(value, position.y, position.z)
+        const position = cameraControl.getPosition(new THREE.Vector3());
+        cameraControl.setPosition(value, position.y, position.z);
       },
     },
     y: {
@@ -62,8 +62,8 @@ export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
       max: 500,
       step: 0.1,
       onChange: (value) => {
-        const position = cameraControl.getPosition(new THREE.Vector3())
-        cameraControl.setPosition(position.x, value, position.z)
+        const position = cameraControl.getPosition(new THREE.Vector3());
+        cameraControl.setPosition(position.x, value, position.z);
       },
     },
     z: {
@@ -72,8 +72,8 @@ export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
       max: 500,
       step: 0.1,
       onChange: (value) => {
-        const position = cameraControl.getPosition(new THREE.Vector3())
-        cameraControl.setPosition(position.x, position.y, value)
+        const position = cameraControl.getPosition(new THREE.Vector3());
+        cameraControl.setPosition(position.x, position.y, value);
       },
     },
     near: {
@@ -82,8 +82,8 @@ export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
       max: 30,
       step: 0.001,
       onChange: (value) => {
-        cameraControl.camera.near = value
-        cameraControl.camera.updateProjectionMatrix()
+        cameraControl.camera.near = value;
+        cameraControl.camera.updateProjectionMatrix();
       },
     },
     far: {
@@ -92,11 +92,11 @@ export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
       max: 5000,
       step: 1,
       onChange: (value) => {
-        cameraControl.camera.far = value
-        cameraControl.camera.updateProjectionMatrix()
+        cameraControl.camera.far = value;
+        cameraControl.camera.updateProjectionMatrix();
       },
     },
-  })
-  folder.expanded = false
-  return folder
+  });
+  folder.expanded = false;
+  return folder;
 }

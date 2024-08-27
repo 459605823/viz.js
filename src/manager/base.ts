@@ -1,12 +1,12 @@
-import type Viz from '@/Viz'
+import type Viz from '@/Viz';
 
 export default class Manager {
-  viz?: Viz
+  viz?: Viz;
 
-  name = 'Manager'
+  name = 'Manager';
 
   install(viz: Viz) {
-    this.viz = viz
+    this.viz = viz;
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -16,6 +16,6 @@ export default class Manager {
   setSize(width: number, height: number) {}
 
   dispose() {
-    this.viz = undefined
+    this.viz = undefined;
   }
 }

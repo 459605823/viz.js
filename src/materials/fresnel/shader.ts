@@ -8,7 +8,7 @@ void main() {
   vNormal = normalize(normalMatrix * normal);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
-`
+`;
 
 // language=GLSL
 export const fragment = /* GLSL */ `
@@ -23,4 +23,4 @@ void main() {
   float intensity = pow(fresnelIntensity - -min(dot(vView, normalize(vNormal)), 0.0), fresnelExponent);
   gl_FragColor = vec4(diffuseColor, intensity);
 }
-`
+`;

@@ -1,36 +1,36 @@
-import * as THREE from 'three'
-import type {Viz} from '..'
+import * as THREE from 'three';
+import type {Viz} from '..';
 import {
   createPromise,
   disposeObject3D,
   getBounds,
   hasObject,
   isObjectVisible,
-} from '../utils'
-import Manager from './base'
-import type {KeyOf} from '@/types/utils'
+} from '../utils';
+import Manager from './base';
+import type {KeyOf} from '@/types/utils';
 
 interface ComponentOptions {
-  [key: string]: any
-  key?: string
+  [key: string]: any;
+  key?: string;
 }
 
 export class Component extends THREE.EventDispatcher {
-  readonly isComponent = true
+  readonly isComponent = true;
 
-  options: ComponentOptions = {}
+  options: ComponentOptions = {};
 
-  object3D: THREE.Object3D = new THREE.Group()
+  object3D: THREE.Object3D = new THREE.Group();
 
-  id: string
+  id: string;
 
-  private manager?: ComponentManager<any>
+  private manager?: ComponentManager<any>;
 
-  viz?: Viz
+  viz?: Viz;
 
-  userData: Record<string, any> = {}
+  userData: Record<string, any> = {};
 
-  pm = createPromise()
+  pm = createPromise();
 
   /**
    * 表示组件是否在视野内，没有被其他物体遮挡
@@ -41,17 +41,17 @@ export class Component extends THREE.EventDispatcher {
       this.viz!.camera,
       this.viz!.raycaster,
       this.manager!.object3Ds,
-    )
+    );
   }
 
   get bound() {
-    return getBounds(this.object3D)
+    return getBounds(this.object3D);
   }
 
   constructor(options: ComponentOptions = {}) {
-    super()
-    this.options = options
-    this.id = options.key || THREE.MathUtils.generateUUID()
+    super();
+    this.options = options;
+    this.id = options.key || THREE.MathUtils.generateUUID();
   }
 
   public create() {}
@@ -65,106 +65,104 @@ export class Component extends THREE.EventDispatcher {
   public setSize(width: number, height: number) {}
 
   public hide() {
-    this.object3D.visible = false
+    this.object3D.visible = false;
   }
 
   public show() {
-    this.object3D.visible = true
+    this.object3D.visible = true;
   }
 
   public add(object: Parameters<THREE.Object3D['add']>[0]) {
-    this.object3D.add(object)
+    this.object3D.add(object);
   }
 
   public remove(object: Parameters<THREE.Object3D['remove']>[0]) {
-    this.object3D.remove(object)
+    this.object3D.remove(object);
   }
 
   public has(object: THREE.Object3D) {
-    return hasObject(object, this.object3D)
+    return hasObject(object, this.object3D);
   }
 
   public showBoundingBox(color = '#ff0000') {
     if (!this.viz?.option.dev)
-      return
+      return;
     const helper = new THREE.Box3Helper(
       this.bound.bbox,
       new THREE.Color(color),
-    )
-    this.viz?.scene?.add(helper)
+    );
+    this.viz?.scene?.add(helper);
   }
 
   public showBoundingSphere(color = '#ff0000') {
     if (!this.viz?.option.dev)
-      return
-    const {center, radius} = this.bound.sphere
-    const geometry = new THREE.SphereGeometry(radius, 16, 16)
+      return;
+    const {center, radius} = this.bound.sphere;
+    const geometry = new THREE.SphereGeometry(radius, 16, 16);
     const material = new THREE.MeshBasicMaterial({
       color: new THREE.Color(color),
       wireframe: true,
-    })
-    const sphere = new THREE.Mesh(geometry, material)
-    sphere.position.copy(center)
-    this.viz?.scene?.add(sphere)
+    });
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.position.copy(center);
+    this.viz?.scene?.add(sphere);
   }
 
   public dispose() {
-    this.object3D.removeFromParent()
-    disposeObject3D(this.object3D)
-    this.viz = undefined
-    this.manager = undefined
+    this.object3D.removeFromParent();
+    disposeObject3D(this.object3D);
+    this.viz = undefined;
+    this.manager = undefined;
   }
 }
 
 export class ComponentManager<
   T extends Record<string, new (...args: any[]) => Component>,
 > extends Manager {
-  readonly name = 'ComponentManager'
+  readonly name = 'ComponentManager';
 
-  private componentMap = new Map()
+  private componentMap = new Map();
 
-  private instances: any[] = []
+  private instances: any[] = [];
 
   get componentPromise() {
-    return this.instances.map(instance => instance.pm.promise)
+    return this.instances.map(instance => instance.pm.promise);
   }
 
   get object3Ds() {
-    return this.instances.map(instance => instance.object3D)
+    return this.instances.map(instance => instance.object3D);
   }
 
   constructor(componentMap: T) {
-    super()
+    super();
     Object.entries(componentMap).forEach(([name, component]) => {
-      this.componentMap.set(name, component)
-    })
+      this.componentMap.set(name, component);
+    });
   }
 
-  getInstances<Y extends KeyOf<T>>(name: Y): InstanceType<T[Y]>[]
+  getInstances<Y extends KeyOf<T>>(name: Y): InstanceType<T[Y]>[];
   getInstances<Y extends KeyOf<T>>(
     name: Y,
     key: string
-  ): InstanceType<T[Y]> | undefined
+  ): InstanceType<T[Y]> | undefined;
   getInstances<Y extends KeyOf<T>>(
     name: Y,
     key: string[]
-  ): InstanceType<T[Y]>[]
+  ): InstanceType<T[Y]>[];
   getInstances<Y extends KeyOf<T>>(
     name: Y,
     key: string | string[] | undefined = undefined,
   ): InstanceType<T[Y]> | InstanceType<T[Y]>[] | undefined {
     if (typeof key === 'string') {
-      return this.instances.find(instance => instance.id === `${name}#${key}`)
-    }
-    else if (Array.isArray(key) && key.length) {
+      return this.instances.find(instance => instance.id === `${name}#${key}`);
+    } else if (Array.isArray(key) && key.length) {
       return key
         .map(k =>
           this.instances.find(instance => instance.id === `${name}#${k}`),
         )
-        .filter(Boolean) as InstanceType<T[Y]>[]
-    }
-    else {
-      return this.instances.filter(instance => instance.id?.startsWith(name))
+        .filter(Boolean) as InstanceType<T[Y]>[];
+    } else {
+      return this.instances.filter(instance => instance.id?.startsWith(name));
     }
   }
 
@@ -173,10 +171,9 @@ export class ComponentManager<
     key?: string,
   ): InstanceType<T[Y]> | undefined {
     if (key) {
-      return this.instances.find(instance => instance.id === `${name}#${key}`)
-    }
-    else {
-      return this.instances.find(instance => instance.id?.startsWith(name))
+      return this.instances.find(instance => instance.id === `${name}#${key}`);
+    } else {
+      return this.instances.find(instance => instance.id?.startsWith(name));
     }
   }
 
@@ -185,32 +182,31 @@ export class ComponentManager<
     options: ConstructorParameters<T[Y]>[0] = {},
     parent?: THREE.Object3D | Component,
   ): Promise<InstanceType<T[Y]>> {
-    const ComponentConstructor = this.componentMap.get(name)
+    const ComponentConstructor = this.componentMap.get(name);
     if (!ComponentConstructor) {
-      throw new Error(`未找到名为${name}的组件`)
+      throw new Error(`未找到名为${name}的组件`);
     }
-    const viz = this.viz!
-    const key = options.key
-    let id = `${name}#${THREE.MathUtils.generateUUID()}`
+    const viz = this.viz!;
+    const key = options.key;
+    let id = `${name}#${THREE.MathUtils.generateUUID()}`;
     if (key) {
-      id = `${name}#${key}`
+      id = `${name}#${key}`;
     }
-    const instance = new ComponentConstructor(options)
-    instance.id = id
-    this.instances.push(instance)
-    instance.viz = viz
-    instance.manager = this
+    const instance = new ComponentConstructor(options);
+    instance.id = id;
+    this.instances.push(instance);
+    instance.viz = viz;
+    instance.manager = this;
     try {
-      await instance.create()
+      await instance.create();
+    } catch (error) {
+      instance.pm.reject(`创建${name}时发生错误: ${error}`);
     }
-    catch (error) {
-      instance.pm.reject(`创建${name}时发生错误: ${error}`)
-    }
-    instance.render()
-    instance.pm.resolve()
-    parent = parent || viz.scene
-    parent?.add(instance.object3D)
-    return instance
+    instance.render();
+    instance.pm.resolve();
+    parent = parent || viz.scene;
+    parent?.add(instance.object3D);
+    return instance;
   }
 
   erase(
@@ -225,30 +221,30 @@ export class ComponentManager<
         )
         : Array.isArray(name)
           ? name
-          : [name]
+          : [name];
     if (instances?.length) {
       instances.forEach((instance) => {
-        instance.dispose()
-        this.instances = this.instances.filter(i => i.id !== instance.id)
-      })
+        instance.dispose();
+        this.instances = this.instances.filter(i => i.id !== instance.id);
+      });
     }
   }
 
   clear() {
-    this.instances.forEach(instance => this.erase(instance))
-    this.instances = []
+    this.instances.forEach(instance => this.erase(instance));
+    this.instances = [];
   }
 
   update(delta: number) {
-    this.instances.forEach(instance => instance.update(delta))
+    this.instances.forEach(instance => instance.update(delta));
   }
 
   setSize(width: number, height: number) {
-    this.instances.forEach(instance => instance.setSize(width, height))
+    this.instances.forEach(instance => instance.setSize(width, height));
   }
 
   dispose() {
-    this.clear()
-    super.dispose()
+    this.clear();
+    super.dispose();
   }
 }

@@ -1,1 +1,1 @@
-export {FresnelMaterial} from './fresnel'
+export {FresnelMaterial} from './fresnel';

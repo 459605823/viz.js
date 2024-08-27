@@ -8,57 +8,56 @@ import {
   FXAAEffect,
   RenderPass,
   SelectiveBloomEffect,
-} from 'postprocessing'
-import * as THREE from 'three'
+} from 'postprocessing';
+import * as THREE from 'three';
 
 export interface Options {
-  renderer: THREE.WebGLRenderer
-  scene: THREE.Scene
-  camera: THREE.Camera
-  antialias?: 'msaa' | 'fxaa'
-  multisampling?: number
-  bloom?: boolean | BloomEffectOptions
+  renderer: THREE.WebGLRenderer;
+  scene: THREE.Scene;
+  camera: THREE.Camera;
+  antialias?: 'msaa' | 'fxaa';
+  multisampling?: number;
+  bloom?: boolean | BloomEffectOptions;
 }
 
 export class ComposerController {
-  composer: EffectComposer
+  composer: EffectComposer;
 
-  options: Options
+  options: Options;
 
-  bloomEffect?: SelectiveBloomEffect
+  bloomEffect?: SelectiveBloomEffect;
 
   constructor(options: Options) {
-    const {renderer, scene, camera, bloom} = options
+    const {renderer, scene, camera, bloom} = options;
     const composer = new EffectComposer(renderer, {
       frameBufferType: THREE.HalfFloatType,
-    })
-    this.options = options
-    this.composer = composer
-    composer.addPass(new RenderPass(scene, camera))
-    const effects = [this.addAAEffect()].filter(Boolean) as Effect[]
+    });
+    this.options = options;
+    this.composer = composer;
+    composer.addPass(new RenderPass(scene, camera));
+    const effects = [this.addAAEffect()].filter(Boolean) as Effect[];
     if (bloom) {
-      effects.push(this.addBloomEffect(bloom === true ? {} : bloom))
+      effects.push(this.addBloomEffect(bloom === true ? {} : bloom));
     }
-    composer.addPass(new EffectPass(camera, ...effects))
+    composer.addPass(new EffectPass(camera, ...effects));
   }
 
   private addAAEffect() {
-    const {renderer, antialias = 'msaa', multisampling = 4} = this.options
-    const {isWebGL2, maxSamples} = renderer.capabilities
+    const {renderer, antialias = 'msaa', multisampling = 4} = this.options;
+    const {isWebGL2, maxSamples} = renderer.capabilities;
     this.composer.multisampling
       = isWebGL2 && antialias === 'msaa'
         ? Math.min(multisampling, maxSamples)
-        : 0
+        : 0;
     if (antialias === 'msaa') {
-      return this.composer.addPass(new CopyPass())
-    }
-    else if (antialias === 'fxaa') {
-      return new FXAAEffect({blendFunction: BlendFunction.ADD})
+      return this.composer.addPass(new CopyPass());
+    } else if (antialias === 'fxaa') {
+      return new FXAAEffect({blendFunction: BlendFunction.ADD});
     }
   }
 
   private addBloomEffect(params?: BloomEffectOptions) {
-    const {scene, camera} = this.options
+    const {scene, camera} = this.options;
     const effect = new SelectiveBloomEffect(scene, camera, {
       blendFunction: BlendFunction.ADD,
       luminanceThreshold: 0.3,
@@ -66,19 +65,19 @@ export class ComposerController {
       mipmapBlur: true,
       intensity: 4.0,
       ...params,
-    })
-    effect.ignoreBackground = true
-    this.bloomEffect = effect
-    return effect
+    });
+    effect.ignoreBackground = true;
+    this.bloomEffect = effect;
+    return effect;
   }
 
   public toggleBloom(object3D: THREE.Object3D) {
-    this.bloomEffect?.selection.toggle(object3D)
+    this.bloomEffect?.selection.toggle(object3D);
   }
 
   dispose() {
-    this.composer.multisampling = 0
-    this.composer.dispose()
-    this.bloomEffect = undefined
+    this.composer.multisampling = 0;
+    this.composer.dispose();
+    this.bloomEffect = undefined;
   }
 }

@@ -1,41 +1,41 @@
-import * as THREE from 'three'
-import {gsap} from 'gsap'
-import {MeshLineGeometry} from './MeshLineGeometry'
-import {raycast} from './raycast'
-import type {MeshLineMaterialParameters} from './MeshLineMaterial'
-import {MeshLineMaterial} from './MeshLineMaterial'
-import {Component} from '@/manager/component'
+import * as THREE from 'three';
+import {gsap} from 'gsap';
+import {MeshLineGeometry} from './MeshLineGeometry';
+import {raycast} from './raycast';
+import type {MeshLineMaterialParameters} from './MeshLineMaterial';
+import {MeshLineMaterial} from './MeshLineMaterial';
+import {Component} from '@/manager/component';
 
 type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution'> & {
-  transparent?: boolean
-  blending?: THREE.Blending
-}
+  transparent?: boolean;
+  blending?: THREE.Blending;
+};
 
 export interface Options {
-  points: THREE.Vector3[]
-  material: MaterialParameters
-  wcb?: (p: number) => void
-  pickable?: boolean
-  useCache?: boolean
+  points: THREE.Vector3[];
+  material: MaterialParameters;
+  wcb?: (p: number) => void;
+  pickable?: boolean;
+  useCache?: boolean;
   animation?: {
-    animationType?: 'texture' | 'dash'
-    duration?: number
-    delay?: number
-    repeat?: number
-    repeatDelay?: number
-  }
+    animationType?: 'texture' | 'dash';
+    duration?: number;
+    delay?: number;
+    repeat?: number;
+    repeatDelay?: number;
+  };
 }
 
 export class Line extends Component {
-  options: Options
+  options: Options;
 
-  material?: MeshLineMaterial
+  material?: MeshLineMaterial;
 
-  tween?: gsap.core.Tween
+  tween?: gsap.core.Tween;
 
   constructor(options: Options) {
-    super(options)
-    this.options = options
+    super(options);
+    this.options = options;
   }
 
   create() {
@@ -45,40 +45,39 @@ export class Line extends Component {
       material: materialParams,
       pickable,
       useCache,
-    } = this.options
-    const {width, height} = this.viz!.getSize()!
-    const geometry = new MeshLineGeometry()
-    geometry.setPoints(points, wcb)
-    let material: MeshLineMaterial
+    } = this.options;
+    const {width, height} = this.viz!.getSize()!;
+    const geometry = new MeshLineGeometry();
+    geometry.setPoints(points, wcb);
+    let material: MeshLineMaterial;
     if (useCache) {
-      material = this.viz?.cacheManager.get('lineMaterial')
+      material = this.viz?.cacheManager.get('lineMaterial');
       if (!material) {
         material = new MeshLineMaterial({
           ...materialParams,
           resolution: new THREE.Vector2(width, height),
-        })
-        this.viz?.cacheManager.set('lineMaterial', material)
+        });
+        this.viz?.cacheManager.set('lineMaterial', material);
       }
-    }
-    else {
+    } else {
       material = new MeshLineMaterial({
         ...materialParams,
         resolution: new THREE.Vector2(width, height),
-      })
+      });
     }
     if (materialParams.transparent) {
-      material.toneMapped = false
-      material.depthWrite = false
-      material.transparent = true
-      material.blending = materialParams.blending || THREE.NormalBlending
+      material.toneMapped = false;
+      material.depthWrite = false;
+      material.transparent = true;
+      material.blending = materialParams.blending || THREE.NormalBlending;
     }
-    this.material = material
+    this.material = material;
 
-    const mesh = new THREE.Mesh(geometry, material)
+    const mesh = new THREE.Mesh(geometry, material);
     if (pickable) {
-      mesh.raycast = raycast
+      mesh.raycast = raycast;
     }
-    this.object3D = mesh
+    this.object3D = mesh;
   }
 
   animateIn(duration: number) {
@@ -90,17 +89,17 @@ export class Line extends Component {
           visibility: 1,
           duration,
           onStart: () => {
-            this.show()
+            this.show();
           },
         },
-      )
+      );
     }
   }
 
   animateTexture() {
-    const {animation} = this.options
+    const {animation} = this.options;
     if (animation && this.material) {
-      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation
+      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation;
       this.tween = gsap.to(this.material.offset, {
         x: -1,
         duration,
@@ -108,14 +107,14 @@ export class Line extends Component {
         repeat,
         repeatDelay,
         ease: 'none',
-      })
+      });
     }
   }
 
   animateDash() {
-    const {animation} = this.options
+    const {animation} = this.options;
     if (animation && this.material) {
-      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation
+      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation;
       this.tween = gsap.to(this.material, {
         dashOffset: 0,
         duration,
@@ -123,31 +122,30 @@ export class Line extends Component {
         repeat,
         repeatDelay,
         ease: 'none',
-      })
+      });
     }
   }
 
   render() {
-    const {animation} = this.options
+    const {animation} = this.options;
     if (animation) {
-      const {animationType = 'texture'} = animation
+      const {animationType = 'texture'} = animation;
       if (animationType === 'texture') {
-        this.animateTexture()
-      }
-      else if (animationType === 'dash') {
-        this.animateDash()
+        this.animateTexture();
+      } else if (animationType === 'dash') {
+        this.animateDash();
       }
     }
   }
 
   setSize(width: number, height: number) {
-    this.material?.resolution.set(width, height)
+    this.material?.resolution.set(width, height);
   }
 
   dispose() {
-    super.dispose()
-    this.material = undefined
-    this.tween?.kill()
-    this.tween = undefined
+    super.dispose();
+    this.material = undefined;
+    this.tween?.kill();
+    this.tween = undefined;
   }
 }

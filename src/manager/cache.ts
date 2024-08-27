@@ -1,32 +1,32 @@
-import Manager from './base'
+import Manager from './base';
 
 export class CacheManager extends Manager {
-  readonly name = 'CacheManager'
+  readonly name = 'CacheManager';
 
-  private cache: Record<string, any> = {}
+  private cache: Record<string, any> = {};
 
   set(key: string, value: any) {
-    this.cache[key] = value
+    this.cache[key] = value;
   }
 
   get(key: string) {
-    return this.cache[key]
+    return this.cache[key];
   }
 
   has(key: string) {
-    return key in this.cache
+    return key in this.cache;
   }
 
   remove(key: string) {
-    delete this.cache[key]
+    delete this.cache[key];
   }
 
   clear() {
-    this.cache = {}
+    this.cache = {};
   }
 
   dispose() {
-    super.dispose()
-    this.clear()
+    super.dispose();
+    this.clear();
   }
 }

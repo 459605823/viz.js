@@ -1,6 +1,6 @@
-import path from 'node:path'
-import {defineBuildConfig} from 'unbuild'
-import image from '@rollup/plugin-image'
+import path from 'node:path';
+import {defineBuildConfig} from 'unbuild';
+import image from '@rollup/plugin-image';
 
 export default defineBuildConfig({
   entries: [
@@ -25,8 +25,8 @@ export default defineBuildConfig({
   hooks: {
     'rollup:options': (_, options) => {
       if (Array.isArray(options.plugins)) {
-        options.plugins.push(image())
+        options.plugins.push(image());
       }
     },
   },
-})
+});
