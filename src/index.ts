@@ -8,5 +8,5 @@ export * from './components';
 export * from './materials';
 export * as THREE from 'three';
 export * as THREE_STDLIB from 'three-stdlib';
-export * as Drei from '@pmndrs/vanilla';
-export * as VizUtils from './utils';
+export * as DREI from '@pmndrs/vanilla';
+export * as VIZ_UTILS from './utils';

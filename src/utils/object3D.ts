@@ -23,15 +23,15 @@ export function disposeObject3D(object: THREE.Object3D) {
 
 export function getBounds(object: THREE.Object3D) {
   const box3 = new THREE.Box3().setFromObject(object);
-  const center = box3.getCenter(new THREE.Vector3());
   const size = box3.getSize(new THREE.Vector3());
   const sphere = new THREE.Sphere();
   box3.getBoundingSphere(sphere);
   return {
-    bbox: box3,
-    sphere,
-    center,
+    boundingBox: box3,
+    boundingSphere: sphere,
     size,
+    center: sphere.center,
+    radius: sphere.radius,
   };
 }
 

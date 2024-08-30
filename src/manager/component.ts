@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type {Viz} from '..';
 import {
-  createPromise,
+  Deferred,
   disposeObject3D,
   getBounds,
   hasObject,
@@ -24,13 +24,17 @@ export class Component extends THREE.EventDispatcher {
 
   id: string;
 
-  private manager?: ComponentManager<any>;
+  manager?: ComponentManager<any>;
 
   viz?: Viz;
 
   userData: Record<string, any> = {};
 
-  pm = createPromise();
+  deferred = new Deferred<InstanceType<typeof Component>>();
+
+  boundingBoxHelper?: THREE.Box3Helper;
+
+  boundingSphereHelper?: THREE.Mesh;
 
   /**
    * 表示组件是否在视野内，没有被其他物体遮挡
@@ -44,8 +48,16 @@ export class Component extends THREE.EventDispatcher {
     );
   }
 
-  get bound() {
+  get boundingInfo() {
     return getBounds(this.object3D);
+  }
+
+  get boundingBox() {
+    return this.boundingInfo.boundingBox;
+  }
+
+  get boundingSphere() {
+    return this.boundingInfo.boundingSphere;
   }
 
   constructor(options: ComponentOptions = {}) {
@@ -84,20 +96,36 @@ export class Component extends THREE.EventDispatcher {
     return hasObject(object, this.object3D);
   }
 
+  public intersectObject(object: Component | THREE.Object3D) {
+    if (object instanceof Component && object.isComponent) {
+      return this.boundingBox.intersectsBox(object.boundingBox);
+    } else {
+      const box3 = new THREE.Box3().setFromObject(object as THREE.Object3D);
+      return this.boundingBox.intersectsBox(box3);
+    }
+  }
+
   public showBoundingBox(color = '#ff0000') {
     if (!this.viz?.option.dev)
       return;
     const helper = new THREE.Box3Helper(
-      this.bound.bbox,
+      this.boundingBox,
       new THREE.Color(color),
     );
     this.viz?.scene?.add(helper);
+    this.boundingBoxHelper = helper;
+  }
+
+  public hideBoundingBox() {
+    if (this.boundingBoxHelper) {
+      this.boundingBoxHelper.visible = false;
+    }
   }
 
   public showBoundingSphere(color = '#ff0000') {
     if (!this.viz?.option.dev)
       return;
-    const {center, radius} = this.bound.sphere;
+    const {center, radius} = this.boundingSphere;
     const geometry = new THREE.SphereGeometry(radius, 16, 16);
     const material = new THREE.MeshBasicMaterial({
       color: new THREE.Color(color),
@@ -106,13 +134,24 @@ export class Component extends THREE.EventDispatcher {
     const sphere = new THREE.Mesh(geometry, material);
     sphere.position.copy(center);
     this.viz?.scene?.add(sphere);
+    this.boundingSphereHelper = sphere;
+  }
+
+  public hideBoundingSphere() {
+    if (this.boundingSphereHelper) {
+      this.boundingSphereHelper.visible = false;
+    }
   }
 
   public dispose() {
+    this.boundingBoxHelper?.removeFromParent();
+    this.boundingSphereHelper?.removeFromParent();
     this.object3D.removeFromParent();
     disposeObject3D(this.object3D);
     this.viz = undefined;
     this.manager = undefined;
+    this.boundingBoxHelper = undefined;
+    this.boundingSphereHelper = undefined;
   }
 }
 
@@ -121,12 +160,12 @@ export class ComponentManager<
 > extends Manager {
   readonly name = 'ComponentManager';
 
-  private componentMap = new Map();
+  private componentMap = new Map<string, new (...args: any[]) => Component>();
 
-  private instances: any[] = [];
+  private instances: InstanceType<T[keyof T]>[] = [];
 
   get componentPromise() {
-    return this.instances.map(instance => instance.pm.promise);
+    return this.instances.map(instance => instance.deferred.promise);
   }
 
   get object3Ds() {
@@ -192,7 +231,7 @@ export class ComponentManager<
     if (key) {
       id = `${name}#${key}`;
     }
-    const instance = new ComponentConstructor(options);
+    const instance = new ComponentConstructor(options) as InstanceType<T[Y]>;
     instance.id = id;
     this.instances.push(instance);
     instance.viz = viz;
@@ -200,10 +239,10 @@ export class ComponentManager<
     try {
       await instance.create();
     } catch (error) {
-      instance.pm.reject(`创建${name}时发生错误: ${error}`);
+      instance.deferred.reject(`创建${name}时发生错误: ${error}`);
     }
     instance.render();
-    instance.pm.resolve();
+    instance.deferred.resolve(instance);
     parent = parent || viz.scene;
     parent?.add(instance.object3D);
     return instance;

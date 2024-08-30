@@ -39,6 +39,7 @@ export interface Options {
 
 const defaultOptions: Partial<Options> = {
   staticPath: '/',
+  dev: false,
   gui: true,
   stats: true,
   axis: true,
@@ -98,7 +99,7 @@ export default class Viz<
     return this.getManager('cache') as CacheManager;
   }
 
-  get bound() {
+  get sceneBoundingInfo() {
     return getBounds(this.scene!);
   }
 

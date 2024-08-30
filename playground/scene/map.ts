@@ -57,11 +57,9 @@ export default class Map {
       new THREE.SphereGeometry(0.1, 32, 32),
       new THREE.MeshBasicMaterial({color: 0xFF0000, depthTest: false}),
     )
-    mesh.position.copy(china!.center)
+    mesh.position.set(100, 100, 100)
     viz.scene?.add(mesh)
-    console.log(map.polygonMap)
-    console.log('china', china)
-    viz.cameraControl?.fitToSphere(mesh, false)
+    console.log(map.intersectObject(mesh))
   }
 
   dispose() {
