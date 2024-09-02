@@ -231,11 +231,13 @@ export class ComponentManager<
     if (key) {
       id = `${name}#${key}`;
     }
-    const instance = new ComponentConstructor(options) as InstanceType<T[Y]>;
-    instance.id = id;
-    this.instances.push(instance);
+    const instance = new ComponentConstructor({
+      ...options,
+      key: id,
+    }) as InstanceType<T[Y]>;
     instance.viz = viz;
     instance.manager = this;
+    this.instances.push(instance);
     try {
       await instance.create();
     } catch (error) {

@@ -106,9 +106,9 @@ const uvGenerator = {
 };
 
 export default class Polygon extends THREE.Object3D {
-  _mesh: THREE.Group | undefined;
+  private _mesh: THREE.Group | undefined;
 
-  _line: THREE.Group | undefined;
+  private _line: THREE.Group | undefined;
 
   get mesh() {
     return this._mesh;
