@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
 import type {GuiManager} from '../manager';
-import {calculateVerticalFoV} from '@/utils/camera';
+import {calculateVerticalFoV} from '@/utils';
 
 CameraControls.install({THREE});
 
