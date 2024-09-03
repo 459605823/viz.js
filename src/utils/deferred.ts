@@ -1,4 +1,4 @@
-export function createPromise<T>() {
+export function createPromise<T = any>() {
   let resolve: (value: T) => void = () => {};
   let reject: (reason?: unknown) => void = () => {};
   const promise = new Promise<T>((res, rej) => {
@@ -12,12 +12,12 @@ export function createPromise<T>() {
   };
 }
 
-export class Deferred<T> {
+export class Deferred<T = any> {
   promise: Promise<T>;
 
-  resolve!: (value: T) => void;
+  resolve: (value: T) => void;
 
-  reject!: (reason: unknown) => void;
+  reject: (reason: unknown) => void;
 
   constructor() {
     const {promise, resolve, reject} = createPromise<T>();

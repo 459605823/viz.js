@@ -203,12 +203,12 @@ export default class Viz<
     }
   }
 
-  private registerManager(name: string, manager: any) {
+  public registerManager(name: string, manager: any) {
     manager.install(this);
     this.managerMap.set(name, manager);
   }
 
-  private unregisterManager(name: string) {
+  public unregisterManager(name: string) {
     const manager = this.managerMap.get(name);
     if (manager) {
       manager.dispose();
