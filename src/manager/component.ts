@@ -12,6 +12,9 @@ import type {KeyOf} from '@/types/utils';
 
 interface ComponentOptions {
   [key: string]: any;
+  /**
+   * 组件的唯一标识
+   */
   key?: string;
 }
 
@@ -218,7 +221,13 @@ export class ComponentManager<
 
   async draw<Y extends KeyOf<T>>(
     name: Y,
-    options: ConstructorParameters<T[Y]>[0] = {},
+    options: ConstructorParameters<T[Y]>[0]
+    & {
+      /**
+       * 组件的唯一标识
+       */
+      key?: string;
+    } = {},
     parent?: THREE.Object3D | Component,
   ): Promise<InstanceType<T[Y]>> {
     const ComponentConstructor = this.componentMap.get(name);
