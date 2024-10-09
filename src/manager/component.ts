@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {OBB} from 'three-stdlib';
 import type {Viz} from '..';
 import {
   Deferred,
@@ -63,6 +64,10 @@ export class Component extends THREE.EventDispatcher {
     return this.boundingInfo.boundingSphere;
   }
 
+  get obb() {
+    return new OBB().fromBox3(this.boundingBox);
+  }
+
   constructor(options: ComponentOptions = {}) {
     super();
     this.options = options;
@@ -99,12 +104,17 @@ export class Component extends THREE.EventDispatcher {
     return hasObject(object, this.object3D);
   }
 
-  public intersectObject(object: Component | THREE.Object3D) {
+  public intersectObject(object: Component | THREE.Object3D, type: 'AABB' | 'OBB' = 'AABB') {
     if (object instanceof Component && object.isComponent) {
-      return this.boundingBox.intersectsBox(object.boundingBox);
+      return type === 'AABB' ? this.boundingBox.intersectsBox(object.boundingBox) : this.obb.intersectsOBB(object.obb);
     } else {
       const box3 = new THREE.Box3().setFromObject(object as THREE.Object3D);
-      return this.boundingBox.intersectsBox(box3);
+      if (type === 'AABB') {
+        return this.boundingBox.intersectsBox(box3);
+      } else {
+        const obb = new OBB().fromBox3(box3);
+        return this.obb.intersectsOBB(obb);
+      }
     }
   }
 
