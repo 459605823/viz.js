@@ -1,6 +1,6 @@
 import type Viz from '@/Viz';
 
-export default class Manager {
+export default abstract class Manager {
   viz?: Viz;
 
   name = 'Manager';

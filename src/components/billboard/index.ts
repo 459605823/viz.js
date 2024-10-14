@@ -9,6 +9,8 @@ export interface Options {
 }
 
 export class Billboard extends Component {
+  readonly name = 'Billboard';
+
   options: Options;
 
   billboard?: ReturnType<typeof BillboardImpl>;

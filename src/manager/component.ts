@@ -13,20 +13,18 @@ import type {KeyOf} from '@/types/utils';
 
 interface ComponentOptions {
   [key: string]: any;
-  /**
-   * 组件的唯一标识
-   */
-  key?: string;
 }
 
-export class Component extends THREE.EventDispatcher {
+export abstract class Component extends THREE.EventDispatcher {
   readonly isComponent = true;
+
+  readonly abstract name: string;
 
   options: ComponentOptions = {};
 
   object3D: THREE.Object3D = new THREE.Group();
 
-  id: string;
+  id = THREE.MathUtils.generateUUID();
 
   manager?: ComponentManager<any>;
 
@@ -71,7 +69,6 @@ export class Component extends THREE.EventDispatcher {
   constructor(options: ComponentOptions = {}) {
     super();
     this.options = options;
-    this.id = options.key || THREE.MathUtils.generateUUID();
   }
 
   public create() {}
@@ -230,7 +227,7 @@ export class ComponentManager<
   }
 
   async draw<Y extends KeyOf<T>>(
-    name: Y,
+    name: Y | InstanceType<T[Y]>,
     options: ConstructorParameters<T[Y]>[0]
     & {
       /**
@@ -240,20 +237,24 @@ export class ComponentManager<
     } = {},
     parent?: THREE.Object3D | Component,
   ): Promise<InstanceType<T[Y]>> {
-    const ComponentConstructor = this.componentMap.get(name);
-    if (!ComponentConstructor) {
-      throw new Error(`未找到名为${name}的组件`);
-    }
-    const viz = this.viz!;
+    let instance: InstanceType<T[Y]>;
     const key = options.key;
-    let id = `${name}#${THREE.MathUtils.generateUUID()}`;
-    if (key) {
-      id = `${name}#${key}`;
+    const viz = this.viz!;
+    let id: string;
+    if (typeof name === 'string') {
+      const ComponentConstructor = this.componentMap.get(name);
+      if (!ComponentConstructor) {
+        throw new Error(`未找到名为${name}的组件`);
+      }
+      id = key ? `${name}#${key}` : `${name}#${THREE.MathUtils.generateUUID()}`;
+      instance = new ComponentConstructor({
+        ...options,
+      }) as InstanceType<T[Y]>;
+    } else {
+      instance = name;
+      id = key ? `${instance.name}#${key}` : `${instance.name}#${THREE.MathUtils.generateUUID()}`;
     }
-    const instance = new ComponentConstructor({
-      ...options,
-      key: id,
-    }) as InstanceType<T[Y]>;
+    instance.id = id;
     instance.viz = viz;
     instance.manager = this;
     this.instances.push(instance);

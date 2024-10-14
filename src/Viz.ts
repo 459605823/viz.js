@@ -20,6 +20,7 @@ import {
   InteractionManager,
 } from './manager';
 import type Manager from './manager/base';
+import {shaderChunkManager, vizShaderChunks} from '@/materials';
 import {getBounds} from '@/utils';
 import type {KeyOf} from '@/types/utils';
 
@@ -113,6 +114,7 @@ export default class Viz<
         this.registerManager(name, manager);
       });
     }
+    shaderChunkManager.install(vizShaderChunks);
     this.registerManager('event', new EventManager());
     this.registerManager('cache', new CacheManager());
     this.registerManager('asset', new AssetManager());
@@ -296,6 +298,7 @@ export default class Viz<
 
   stop() {
     this.renderer?.setAnimationLoop(null);
+    this.animationFrames.length = 0;
   }
 
   dispose() {

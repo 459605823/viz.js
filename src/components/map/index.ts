@@ -19,6 +19,8 @@ export interface Options {
 }
 
 export class ExtrudeMap extends Component {
+  readonly name = 'ExtrudeMap';
+
   options: Options;
 
   polygonMap: Map<string, PolygonComponent> = new Map();

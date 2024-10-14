@@ -27,6 +27,8 @@ export interface Options {
 }
 
 export class Line extends Component {
+  readonly name = 'Line';
+
   options: Options;
 
   material?: MeshLineMaterial;

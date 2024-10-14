@@ -17,6 +17,8 @@ export interface Options {
 }
 
 export class Marker extends Component {
+  readonly name = 'Marker';
+
   options: Options;
 
   element?: HTMLElement;

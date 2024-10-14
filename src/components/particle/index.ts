@@ -31,6 +31,8 @@ export interface Options {
 }
 
 export class Particle extends Component {
+  readonly name = 'Particle';
+
   options: Options;
 
   constructor(options: Options) {
