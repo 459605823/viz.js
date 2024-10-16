@@ -156,8 +156,8 @@ export abstract class Component extends THREE.EventDispatcher {
   public dispose() {
     this.boundingBoxHelper?.removeFromParent();
     this.boundingSphereHelper?.removeFromParent();
+    disposeObject3D(this.object3D, this.viz?.scene);
     this.object3D.removeFromParent();
-    disposeObject3D(this.object3D);
     this.viz = undefined;
     this.manager = undefined;
     this.boundingBoxHelper = undefined;

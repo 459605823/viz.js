@@ -1,9 +1,31 @@
 import * as THREE from 'three';
 
-export function disposeObject3D(object: THREE.Object3D) {
+export function isMaterialInUse(material: THREE.Material, currentObject: THREE.Object3D, scene?: THREE.Scene) {
+  let used = false;
+  if (!scene)
+    return used;
+  scene.traverse((object) => {
+    if (object !== currentObject && object instanceof THREE.Mesh) {
+      if (Array.isArray(object.material)) {
+        object.material.forEach((m) => {
+          if (m === material) {
+            used = true;
+          }
+        });
+      } else {
+        if (object.material === material) {
+          used = true;
+        }
+      }
+    }
+  });
+  return used;
+}
+
+export function disposeObject3D(object: THREE.Object3D, scene?: THREE.Scene) {
   if (object instanceof THREE.Group && object.children.length) {
     object.children.forEach((child) => {
-      disposeObject3D(child);
+      disposeObject3D(child, scene);
     });
   } else if (object instanceof THREE.Mesh) {
     if (object.geometry) {
@@ -12,10 +34,14 @@ export function disposeObject3D(object: THREE.Object3D) {
     if (object.material) {
       if (Array.isArray(object.material)) {
         object.material.forEach((material) => {
-          material.dispose();
+          if (!isMaterialInUse(material, object, scene)) {
+            material.dispose();
+          }
         });
       } else {
-        object.material.dispose();
+        if (!isMaterialInUse(object.material, object, scene)) {
+          object.material.dispose();
+        }
       }
     }
   }

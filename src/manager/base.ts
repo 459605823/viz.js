@@ -3,7 +3,7 @@ import type Viz from '@/Viz';
 export default abstract class Manager {
   viz?: Viz;
 
-  name = 'Manager';
+  abstract readonly name: string;
 
   install(viz: Viz) {
     this.viz = viz;

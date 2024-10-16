@@ -16,6 +16,7 @@ type AssetType = 'gltf' | 'texture' | 'json' | 'video' | 'hdr' | 'exr';
 interface AssetInfo {
   type: AssetType;
   url: string;
+  name?: string;
   version?: string;
 }
 
@@ -50,6 +51,8 @@ export class AssetManager extends Manager {
 
   private dracoLoader = new DRACOLoader();
 
+  private textureStore: THREE.Texture[] = [];
+
   get total() {
     return Array.from(this.assetMap.values()).length;
   }
@@ -74,15 +77,16 @@ export class AssetManager extends Manager {
   constructor() {
     super();
     THREE.Cache.enabled = true;
+    this.setDracoPath(joinPath(this.staticPath, '/draco/gltf/'));
   }
 
-  setDracoPath(dracoPath: string) {
+  public setDracoPath(dracoPath: string) {
     this.dracoLoader.setDecoderPath(dracoPath);
     this.dracoLoader.preload();
     this.loaders.gltf.setDRACOLoader(this.dracoLoader);
   }
 
-  setAsset(assets: AssetInfo[] | AssetInfo) {
+  public setAsset(assets: AssetInfo[] | AssetInfo) {
     if (!Array.isArray(assets)) {
       assets = [assets];
     }
@@ -91,8 +95,7 @@ export class AssetManager extends Manager {
     });
   }
 
-  load() {
-    this.setDracoPath(joinPath(this.staticPath, '/draco/gltf/'));
+  public load() {
     return Promise.all(
       Array.from(this.assetMap.keys()).map((url) => {
         const asset = this.assetMap.get(url);
@@ -105,7 +108,7 @@ export class AssetManager extends Manager {
     );
   }
 
-  getAssetUrl(url: string) {
+  public getAssetUrl(url: string) {
     return url.startsWith(this.staticPath)
       ? url
       : joinPath(this.staticPath, url);
@@ -113,8 +116,9 @@ export class AssetManager extends Manager {
 
   public async loadAsset(asset: AssetInfo) {
     const {url, version, type} = asset;
-    if (this.assetStore.has(url)) {
-      return this.assetStore.get(url);
+    const name = asset.name ?? url;
+    if (this.assetStore.has(name)) {
+      return this.assetStore.get(name);
     }
     let assetUrl = this.getAssetUrl(url);
     if (version) {
@@ -133,6 +137,9 @@ export class AssetManager extends Manager {
           assetUrl,
           (res) => {
             this.assetLoaded(url);
+            if (type === 'texture' || type === 'hdr' || type === 'exr') {
+              this.textureStore.push(res as THREE.Texture);
+            }
             resolve(type === 'json' ? JSON.parse(res as string) : res);
           },
           undefined,
@@ -140,12 +147,12 @@ export class AssetManager extends Manager {
         );
       });
     }
-    this.assetStore.set(url, promise);
+    this.assetStore.set(name, promise);
     return promise;
   }
 
   public async loadVideoTexture(asset: AssetInfo) {
-    const {url} = asset;
+    const {url, name} = asset;
     const promise = new Promise<THREE.VideoTexture>((resolve, reject) => {
       const video = document.createElement('video');
       video.src = this.getAssetUrl(url);
@@ -158,11 +165,12 @@ export class AssetManager extends Manager {
       video.addEventListener('canplaythrough', () => {
         video.play();
         this.assetLoaded(url);
+        this.textureStore.push(texture);
         resolve(texture);
       });
       video.onerror = reject;
     });
-    this.assetStore.set(url, promise);
+    this.assetStore.set(name ?? url, promise);
     return promise;
   }
 
@@ -176,17 +184,21 @@ export class AssetManager extends Manager {
     this.viz?.eventManager.emit('loaded', this.isLoaded);
   }
 
-  public async getAsset(url: `${string}.glb`): Promise<GLTF>;
-  public async getAsset(url: `${string}.gltf`): Promise<GLTF>;
-  public async getAsset(url: `${string}.jpg`): Promise<THREE.Texture>;
-  public async getAsset(url: `${string}.png`): Promise<THREE.Texture>;
-  public async getAsset(url: `${string}.mp4`): Promise<THREE.VideoTexture>;
-  public async getAsset(url: `${string}.json`): Promise<JSON>;
-  public async getAsset(url: string) {
-    return this.assetStore.get(url);
+  public async getAsset(name: `${string}.glb`): Promise<GLTF>;
+  public async getAsset(name: `${string}.gltf`): Promise<GLTF>;
+  public async getAsset(name: `${string}.jpg`): Promise<THREE.Texture>;
+  public async getAsset(name: `${string}.png`): Promise<THREE.Texture>;
+  public async getAsset(name: `${string}.mp4`): Promise<THREE.VideoTexture>;
+  public async getAsset(name: `${string}.json`): Promise<JSON>;
+  public async getAsset(name: string) {
+    return this.assetStore.get(name);
   }
 
   dispose() {
+    this.textureStore.forEach((texture) => {
+      texture.dispose();
+    });
+    this.textureStore = [];
     this.assetStore.clear();
     this.assetMap.clear();
     this.dracoLoader.dispose();

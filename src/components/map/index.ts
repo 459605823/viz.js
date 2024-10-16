@@ -120,7 +120,7 @@ export class ExtrudeMap extends Component {
           props.coordinates.push(this.projectPoints(polygon[0]));
         });
       }
-      const polygon = new PolygonComponent(props);
+      const polygon = new PolygonComponent(props, this.viz?.scene);
       this.object3D.add(polygon);
       this.polygonMap.set(feature.properties.name, polygon);
     });

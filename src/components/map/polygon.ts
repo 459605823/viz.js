@@ -123,7 +123,7 @@ export default class Polygon extends THREE.Object3D {
     return new THREE.Vector3(center.x, center.y, depth);
   }
 
-  constructor(options: PolygonOptions) {
+  constructor(options: PolygonOptions, public scene?: THREE.Scene) {
     super();
     this.userData = {
       type: 'Polygon',
@@ -173,8 +173,9 @@ export default class Polygon extends THREE.Object3D {
   }
 
   dispose() {
-    disposeObject3D(this);
+    disposeObject3D(this, this.scene);
     this.userData = {};
+    this.scene = undefined;
     this._mesh = undefined;
     this._line = undefined;
   }

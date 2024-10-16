@@ -61,13 +61,13 @@ export default class Viz<
 
   composerController?: ComposerController;
 
+  public raycaster = new THREE.Raycaster();
+
   private managerMap = new Map();
 
   private stats?: Stats;
 
   private resizeObserver?: ResizeObserver;
-
-  raycaster = new THREE.Raycaster();
 
   private animationFrames: Array<(delta?: number) => void> = [];
 
@@ -220,6 +220,10 @@ export default class Viz<
 
   public getManager<Y extends KeyOf<T>>(name: Y): T[Y] {
     return this.managerMap.get(name);
+  }
+
+  setRaycasterThresholds(type: 'Line' | 'Points', value: number) {
+    this.raycaster.params[type].threshold = value;
   }
 
   pick(objects: THREE.Object3D[], recursive?: boolean) {
