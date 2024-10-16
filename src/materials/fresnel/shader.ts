@@ -1,4 +1,3 @@
-// language=GLSL
 export const vertex = /* GLSL */ `
 varying vec3 vView;
 varying vec3 vNormal;
@@ -10,7 +9,6 @@ void main() {
 }
 `;
 
-// language=GLSL
 export const fragment = /* GLSL */ `
 uniform vec3 diffuseColor;
 uniform float fresnelIntensity;

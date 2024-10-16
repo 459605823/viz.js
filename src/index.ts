@@ -5,7 +5,7 @@ export {type Options as RendererOptions} from './renderer';
 export {ComposerController, type Options as ComposerOptions} from './composer';
 export * from './manager';
 export * from './components';
-export {vizMaterials, shaderChunkManager} from './materials';
+export * from './materials';
 export * as THREE from 'three';
 export * as STDLIB from 'three-stdlib';
 export * as DREI from '@pmndrs/vanilla';

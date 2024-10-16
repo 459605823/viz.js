@@ -1,5 +1,5 @@
 import {geoEquirectangular} from 'd3-geo'
-import {ComponentManager, ExtrudeMap, Viz, THREE} from '@/index'
+import {ComponentManager, ExtrudeMap, Viz, THREE, FakeGlowMaterial} from '@/index'
 
 const projection = geoEquirectangular()
   .center([0, 0])
@@ -52,14 +52,16 @@ export default class Map {
       paddingRight: 1,
       paddingTop: 1,
     })
-    const china = map.polygonMap.get('中国')
+    map.hide()
     const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.1, 32, 32),
-      new THREE.MeshBasicMaterial({color: 0xFF0000, depthTest: false}),
+      new THREE.TorusKnotGeometry(0.8, 0.5, 128, 128),
+      new FakeGlowMaterial({glowColor: '#8039ea'}),
     )
-    mesh.position.set(100, 100, 100)
     viz.scene?.add(mesh)
-    console.log(map.intersectObject(mesh))
+    const torusMaterial = new THREE.MeshBasicMaterial({ color: '#2babab'})
+    const torusMesh2 = new THREE.TorusKnotGeometry(0.8, 0.1, 128, 128)
+    const Torus2 = new THREE.Mesh(torusMesh2, torusMaterial)
+    viz.scene?.add(Torus2)
   }
 
   dispose() {

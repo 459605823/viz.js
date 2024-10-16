@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import Stats from 'stats.js';
 import type {CSS2DRenderer, CSS3DRenderer} from 'three-stdlib';
+import type {GridProps, GridType} from '@pmndrs/vanilla';
+import {Grid} from '@pmndrs/vanilla';
 import createScene, {type Options as SceneOptions} from './scene';
 import createRenderer, {
   type Options as RendererOptions,
@@ -20,7 +22,8 @@ import {
   InteractionManager,
 } from './manager';
 import type Manager from './manager/base';
-import {shaderChunkManager, vizShaderChunks} from '@/materials';
+import {shaderChunkManager} from '@/materials';
+import {vizShaderChunks} from '@/materials/shader';
 import {getBounds} from '@/utils';
 import type {KeyOf} from '@/types/utils';
 
@@ -31,6 +34,7 @@ export interface Options {
   gui?: boolean;
   stats?: boolean;
   axis?: boolean;
+  grid?: boolean | GridProps;
   scene?: SceneOptions;
   renderer?: Omit<RendererOptions, 'width' | 'height' | 'dev'>;
   cssRenderer?: '2d' | '3d' | 'both';
@@ -44,6 +48,7 @@ const defaultOptions: Partial<Options> = {
   gui: true,
   stats: true,
   axis: true,
+  grid: true,
 };
 
 export default class Viz<
@@ -70,6 +75,8 @@ export default class Viz<
   private resizeObserver?: ResizeObserver;
 
   private animationFrames: Array<(delta?: number) => void> = [];
+
+  private grid?: GridType;
 
   get camera() {
     return this.cameraControl?.camera as THREE.PerspectiveCamera;
@@ -133,6 +140,7 @@ export default class Viz<
       dev,
       stats,
       axis,
+      grid,
       container,
       cssRenderer,
       scene: sceneOptions,
@@ -189,6 +197,24 @@ export default class Viz<
         stats.showPanel(0);
         document.body.appendChild(stats.dom);
         this.stats = stats;
+      }
+      if (grid) {
+        const gridIns = Grid({
+          args: [10.5, 10.5],
+          cellSize: 0.6,
+          cellThickness: 1,
+          cellColor: new THREE.Color('#6f6f6f'),
+          sectionSize: 3.3,
+          sectionThickness: 1.2,
+          sectionColor: new THREE.Color('#9d4b4b'),
+          fadeDistance: 25,
+          fadeStrength: 1,
+          followCamera: false,
+          infiniteGrid: true,
+          ...(typeof grid === 'boolean' ? {} : grid),
+        });
+        gridIns.mesh.position.y = 0.005;
+        scene.add(gridIns.mesh);
       }
       if (this.guiManager) {
         setRendererGUI(this.guiManager, renderer);
@@ -252,6 +278,7 @@ export default class Viz<
     this.managerMap.forEach(manager => manager.update(delta));
     this.cameraControl?.update(delta);
     this.stats?.update();
+    this.grid?.update(this.camera);
     this.composerController?.composer?.render();
     this.cssRenderer.forEach((renderer) => {
       renderer.render(this.scene!, this.camera!);
@@ -322,5 +349,6 @@ export default class Viz<
     this.scene = undefined;
     this.stats?.dom.remove();
     this.stats = undefined;
+    this.grid = undefined;
   }
 }
