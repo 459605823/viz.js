@@ -9,8 +9,8 @@ export class CacheManager extends Manager {
     this.cache[key] = value;
   }
 
-  get(key: string) {
-    return this.cache[key];
+  get<T = any>(key: string) {
+    return this.cache[key] as T;
   }
 
   has(key: string) {

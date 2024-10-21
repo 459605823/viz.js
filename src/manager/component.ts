@@ -229,12 +229,12 @@ export class ComponentManager<
   async draw<Y extends KeyOf<T>>(
     name: Y | InstanceType<T[Y]>,
     options: ConstructorParameters<T[Y]>[0]
-    & {
+      & {
       /**
        * 组件的唯一标识
        */
-      key?: string;
-    } = {},
+        key?: string;
+      } = {},
     parent?: THREE.Object3D | Component,
   ): Promise<InstanceType<T[Y]>> {
     let instance: InstanceType<T[Y]>;
@@ -292,7 +292,7 @@ export class ComponentManager<
   }
 
   clear() {
-    this.instances.forEach(instance => this.erase(instance));
+    this.instances.forEach(instance => instance.dispose());
     this.instances = [];
   }
 
