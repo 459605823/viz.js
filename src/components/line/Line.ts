@@ -51,7 +51,7 @@ export class Line extends Component {
     const {width, height} = this.viz!.getSize()!;
     const geometry = new MeshLineGeometry();
     geometry.setPoints(points, wcb);
-    let material: MeshLineMaterial;
+    let material: MeshLineMaterial | undefined;
     if (useCache) {
       material = this.viz?.cacheManager.get('lineMaterial');
       if (!material) {
