@@ -1,10 +1,10 @@
-import type THREE from 'three';
+import type {Object3D} from 'three';
 import type {BillboardProps} from '@pmndrs/vanilla';
 import {Billboard as BillboardImpl} from '@pmndrs/vanilla';
 import {Component} from '@/manager/component';
 
 export interface Options {
-  object: THREE.Object3D;
+  object: Object3D;
   billboardConfig?: BillboardProps;
 }
 

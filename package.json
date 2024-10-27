@@ -1,7 +1,7 @@
 {
   "name": "@f80975/viz.js",
   "type": "module",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "packageManager": "pnpm@9.8.0",
   "author": "f80975 <wjnsail66@gmail.com>",
   "license": "MIT",
@@ -89,7 +89,7 @@
     "*": "eslint --fix"
   },
   "volta": {
-    "node": "20.17.0",
+    "node": "20.18.0",
     "pnpm": "9.8.0"
   }
 }
