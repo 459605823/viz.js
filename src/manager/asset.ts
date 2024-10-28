@@ -190,6 +190,7 @@ export class AssetManager extends Manager {
   public async getAsset(name: `${string}.png`): Promise<THREE.Texture>;
   public async getAsset(name: `${string}.mp4`): Promise<THREE.VideoTexture>;
   public async getAsset(name: `${string}.json`): Promise<JSON>;
+  public async getAsset<T = unknown>(name: string): Promise<T>;
   public async getAsset(name: string) {
     return this.assetStore.get(name);
   }
