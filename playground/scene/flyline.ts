@@ -47,9 +47,9 @@ export default class Map {
   async init() {
     const viz = this.viz
     const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-1, 0, 0),
+      new THREE.Vector3(-2, 1, 0),
       new THREE.Vector3(0, 1, 0),
-      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(2, 1, 0),
     ])
     const length = curve.getLength()
     const texture = createLineTexture('#ff2900', '#ffcb00', 0.4)
@@ -66,6 +66,10 @@ export default class Map {
     viz.scene?.add(plane)
     const line = await componentManager.draw('Line', {
       points: curve.getPoints(100),
+      wcb: (p) => {
+       const a = Math.sin(p * Math.PI)
+       return a * 2
+      },
       material: {
         sizeAttenuation: 1,
         transparent: true,
