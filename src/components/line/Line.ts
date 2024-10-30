@@ -6,8 +6,7 @@ import type {MeshLineMaterialParameters} from './MeshLineMaterial';
 import {MeshLineMaterial} from './MeshLineMaterial';
 import {Component} from '@/manager/component';
 
-type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution'> & {
-  transparent?: boolean;
+type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution' | 'dashArray' | 'dashRatio'> & {
   blending?: THREE.Blending;
 };
 
@@ -17,13 +16,9 @@ export interface Options {
   wcb?: (p: number) => void;
   pickable?: boolean;
   useCache?: boolean;
-  animation?: {
-    animationType?: 'texture' | 'dash';
-    duration?: number;
-    delay?: number;
-    repeat?: number;
-    repeatDelay?: number;
-  };
+  visibleLength?: number;
+  speed?: number;
+  animation?: 'texture' | 'dash';
 }
 
 export class Line extends Component {
@@ -33,7 +28,33 @@ export class Line extends Component {
 
   material?: MeshLineMaterial;
 
-  tween?: gsap.core.Tween;
+  dyingAt = 1;
+
+  get dashLength() {
+    if (this.material) {
+      const voidLength = this.material.dashArray * this.material.dashRatio;
+      return this.material.dashArray - voidLength;
+    }
+    return 0;
+  }
+
+  get diedAt() {
+    return this.dyingAt + this.dashLength;
+  }
+
+  get isDied() {
+    if (this.material) {
+      return this.material.dashOffset < -this.diedAt;
+    }
+    return false;
+  }
+
+  get isDying() {
+    if (this.material) {
+      return this.material.dashOffset < -this.dyingAt;
+    }
+    return false;
+  }
 
   constructor(options: Options) {
     super(options);
@@ -47,16 +68,26 @@ export class Line extends Component {
       material: materialParams,
       pickable,
       useCache,
+      visibleLength = 1,
+      animation,
     } = this.options;
     const {width, height} = this.viz!.getSize()!;
     const geometry = new MeshLineGeometry();
     geometry.setPoints(points, wcb);
+    const dashParams = animation === 'dash'
+      ? {
+        // Here 2 mean a cash is 2 time longer that the original length
+          dashArray: 2,
+          dashRatio: 1 - (visibleLength * 0.5),
+        }
+      : {};
     let material: MeshLineMaterial | undefined;
     if (useCache) {
       material = this.viz?.cacheManager.get('lineMaterial');
       if (!material) {
         material = new MeshLineMaterial({
           ...materialParams,
+          ...dashParams,
           resolution: new THREE.Vector2(width, height),
         });
         this.viz?.cacheManager.set('lineMaterial', material);
@@ -64,15 +95,14 @@ export class Line extends Component {
     } else {
       material = new MeshLineMaterial({
         ...materialParams,
+        ...dashParams,
         resolution: new THREE.Vector2(width, height),
       });
     }
-    if (materialParams.transparent) {
-      material.toneMapped = false;
-      material.depthWrite = false;
-      material.transparent = true;
-      material.blending = materialParams.blending || THREE.NormalBlending;
-    }
+    material.depthWrite = false;
+    material.depthTest = false;
+    material.transparent = true;
+    material.blending = materialParams.blending || THREE.NormalBlending;
     this.material = material;
 
     const mesh = new THREE.Mesh(geometry, material);
@@ -98,45 +128,14 @@ export class Line extends Component {
     }
   }
 
-  animateTexture() {
-    const {animation} = this.options;
-    if (animation && this.material) {
-      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation;
-      this.tween = gsap.to(this.material.offset, {
-        x: -1,
-        duration,
-        delay,
-        repeat,
-        repeatDelay,
-        ease: 'none',
-      });
-    }
-  }
-
-  animateDash() {
-    const {animation} = this.options;
-    if (animation && this.material) {
-      const {duration = 3, delay = 0, repeat = -1, repeatDelay = 0} = animation;
-      this.tween = gsap.to(this.material, {
-        dashOffset: 0,
-        duration,
-        delay,
-        repeat,
-        repeatDelay,
-        ease: 'none',
-      });
-    }
-  }
-
-  render() {
-    const {animation} = this.options;
-    if (animation) {
-      const {animationType = 'texture'} = animation;
-      if (animationType === 'texture') {
-        this.animateTexture();
-      } else if (animationType === 'dash') {
-        this.animateDash();
-      }
+  update() {
+    if (!this.material)
+      return;
+    const {animation, speed = 0.01} = this.options;
+    if (animation === 'dash') {
+      this.material.dashOffset -= speed;
+    } else if (animation === 'texture') {
+      this.material.offset.x -= speed;
     }
   }
 
@@ -147,7 +146,5 @@ export class Line extends Component {
   dispose() {
     super.dispose();
     this.material = undefined;
-    this.tween?.kill();
-    this.tween = undefined;
   }
 }
