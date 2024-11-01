@@ -64,6 +64,11 @@ export default class Map {
       visibleLength: 0.8,
       animation: 'dash',
     })
+    const box = new THREE.Mesh(
+      new THREE.BoxGeometry(5, 5, 5),
+      new THREE.MeshBasicMaterial({color: '#f00'}),
+    )
+    viz.scene?.add(box)
     viz.start()
   }
 

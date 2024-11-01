@@ -8,6 +8,7 @@ import {Component} from '@/manager/component';
 
 type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution' | 'dashArray' | 'dashRatio'> & {
   blending?: THREE.Blending;
+  transparent?: boolean;
 };
 
 export interface Options {
@@ -99,9 +100,10 @@ export class Line extends Component {
         resolution: new THREE.Vector2(width, height),
       });
     }
-    material.depthWrite = false;
-    material.depthTest = false;
-    material.transparent = true;
+    material.transparent = materialParams.transparent ?? true;
+    if (material.transparent) {
+      material.depthWrite = false;
+    }
     material.blending = materialParams.blending || THREE.NormalBlending;
     this.material = material;
 

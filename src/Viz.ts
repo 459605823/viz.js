@@ -295,13 +295,20 @@ export default class Viz<
     });
   }
 
-  start(fn?: (delta?: number) => void) {
+  start(params: {fn?: (delta?: number) => void; frameRate?: number} = {}) {
+    const {fn, frameRate} = params;
     const clock = new THREE.Clock();
+    const interval = frameRate ? 1 / frameRate : 0;
+    let lastTime = 0;
     this.renderer?.setAnimationLoop(() => {
       const delta = clock.getDelta();
-      this.render(delta);
-      fn?.(delta);
-      this.animationFrames.forEach(frame => frame(delta));
+      lastTime += delta;
+      if (lastTime >= interval) {
+        this.render(delta);
+        fn?.(delta);
+        this.animationFrames.forEach(frame => frame(delta));
+        lastTime = 0;
+      }
     });
   }
 
