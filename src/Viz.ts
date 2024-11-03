@@ -56,6 +56,8 @@ export default class Viz<
 > {
   option: Options;
 
+  playing = false;
+
   scene?: ReturnType<typeof createScene>;
 
   renderer?: ReturnType<typeof createRenderer>;
@@ -296,6 +298,7 @@ export default class Viz<
   }
 
   start(params: {fn?: (delta?: number) => void; frameRate?: number} = {}) {
+    this.playing = true;
     const {fn, frameRate} = params;
     const clock = new THREE.Clock();
     const interval = frameRate ? 1 / frameRate : 0;
@@ -335,6 +338,7 @@ export default class Viz<
   }
 
   stop() {
+    this.playing = false;
     this.renderer?.setAnimationLoop(null);
     this.animationFrames.length = 0;
   }
