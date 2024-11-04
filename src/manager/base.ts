@@ -1,6 +1,7 @@
+import {EventDispatcher} from '@/helpers';
 import type Viz from '@/Viz';
 
-export default abstract class Manager {
+export default abstract class Manager extends EventDispatcher {
   viz?: Viz;
 
   abstract readonly name: string;

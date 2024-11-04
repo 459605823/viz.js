@@ -180,8 +180,8 @@ export class AssetManager extends Manager {
       return;
     }
     asset.loaded = true;
-    this.viz?.eventManager.emit('progress', this.progress);
-    this.viz?.eventManager.emit('loaded', this.isLoaded);
+    this.viz?.dispatchEvent({type: 'progress', message: this.progress});
+    this.viz?.dispatchEvent({type: 'loaded', message: this.isLoaded});
   }
 
   public async getAsset(name: `${string}.glb`): Promise<GLTF>;

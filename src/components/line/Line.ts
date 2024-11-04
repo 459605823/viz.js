@@ -11,10 +11,16 @@ type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution' | 'dashA
   transparent?: boolean;
 };
 
+const wcbs = {
+  parabola: (p: number) => (4 * p * (1 - p)) ** 1,
+  linear: (p: number) => 1 - p,
+  wavy: (p: number) => 2 + Math.sin(50 * p),
+};
+
 export interface Options {
   points: THREE.Vector3[];
   material: MaterialParameters;
-  wcb?: (p: number) => void;
+  wcb?: keyof typeof wcbs | ((p: number) => void);
   pickable?: boolean;
   useCache?: boolean;
   visibleLength?: number;
@@ -74,7 +80,7 @@ export class Line extends Component {
     } = this.options;
     const {width, height} = this.viz!.getSize()!;
     const geometry = new MeshLineGeometry();
-    geometry.setPoints(points, wcb);
+    geometry.setPoints(points, typeof wcb === 'string' ? wcbs[wcb] : wcb);
     const dashParams = animation === 'dash'
       ? {
         // Here 2 mean a cash is 2 time longer that the original length

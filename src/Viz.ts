@@ -17,11 +17,11 @@ import {ComposerController, type Options as ComposerOptions} from './composer';
 import {
   AssetManager,
   CacheManager,
-  EventManager,
   GuiManager,
   InteractionManager,
 } from './manager';
 import type Manager from './manager/base';
+import {EventDispatcher} from '@/helpers';
 import {shaderChunkManager} from '@/materials';
 import {vizShaderChunks} from '@/materials/shader';
 import {getBounds} from '@/utils';
@@ -53,7 +53,7 @@ const defaultOptions: Partial<Options> = {
 
 export default class Viz<
   T extends Record<string, Manager> = Record<string, Manager>,
-> {
+> extends EventDispatcher {
   option: Options;
 
   playing = false;
@@ -84,11 +84,6 @@ export default class Viz<
     return this.cameraControl?.camera as THREE.PerspectiveCamera;
   }
 
-  get eventManager() {
-    // @ts-expect-error get default manager
-    return this.getManager('event') as EventManager;
-  }
-
   get interactionManager() {
     // @ts-expect-error get default manager
     return (this.getManager('interaction') as InteractionManager).im;
@@ -114,6 +109,7 @@ export default class Viz<
   }
 
   constructor(options: Options, managers?: T) {
+    super();
     this.option = {
       ...defaultOptions,
       ...options,
@@ -124,7 +120,6 @@ export default class Viz<
       });
     }
     shaderChunkManager.install(vizShaderChunks);
-    this.registerManager('event', new EventManager());
     this.registerManager('cache', new CacheManager());
     this.registerManager('asset', new AssetManager());
     if (this.option.dev && this.option.gui) {

@@ -8,6 +8,7 @@ import {
   hasObject,
   isObjectVisible,
 } from '../utils';
+import {EventDispatcher, OBBHelper} from '../helpers';
 import Manager from './base';
 import type {KeyOf} from '@/types/utils';
 
@@ -15,7 +16,7 @@ interface ComponentOptions {
   [key: string]: any;
 }
 
-export abstract class Component extends THREE.EventDispatcher {
+export abstract class Component extends EventDispatcher {
   readonly isComponent = true;
 
   readonly abstract name: string;
@@ -35,6 +36,8 @@ export abstract class Component extends THREE.EventDispatcher {
   deferred = new Deferred<InstanceType<typeof Component>>();
 
   boundingBoxHelper?: THREE.Box3Helper;
+
+  obbHelper?: OBBHelper;
 
   boundingSphereHelper?: THREE.Mesh;
 
@@ -63,7 +66,12 @@ export abstract class Component extends THREE.EventDispatcher {
   }
 
   get obb() {
-    return new OBB().fromBox3(this.boundingBox);
+    const obb = new OBB();
+    obb.halfSize.copy(this.boundingInfo.size).multiplyScalar(0.5);
+    this.object3D.updateMatrix();
+    this.object3D.updateMatrixWorld();
+    obb.applyMatrix4(this.object3D.matrixWorld);
+    return obb;
   }
 
   constructor(options: ComponentOptions = {}) {
@@ -104,12 +112,14 @@ export abstract class Component extends THREE.EventDispatcher {
   public intersectObject(object: Component | THREE.Object3D, type: 'AABB' | 'OBB' = 'AABB') {
     if (object instanceof Component && object.isComponent) {
       return type === 'AABB' ? this.boundingBox.intersectsBox(object.boundingBox) : this.obb.intersectsOBB(object.obb);
-    } else {
+    } else if (object instanceof THREE.Object3D) {
       const box3 = new THREE.Box3().setFromObject(object as THREE.Object3D);
       if (type === 'AABB') {
         return this.boundingBox.intersectsBox(box3);
       } else {
         const obb = new OBB().fromBox3(box3);
+        object.updateMatrixWorld();
+        obb.applyMatrix4(object.matrixWorld);
         return this.obb.intersectsOBB(obb);
       }
     }
@@ -153,9 +163,25 @@ export abstract class Component extends THREE.EventDispatcher {
     }
   }
 
+  public showObbHelper(color = 0xFFFF00) {
+    if (!this.viz?.option.dev)
+      return;
+    const helper = new OBBHelper(this.obb, this.object3D, color);
+    this.viz?.scene?.add(helper);
+    this.obbHelper = helper;
+  }
+
+  public hideObbHelper() {
+    if (this.obbHelper) {
+      this.obbHelper.visible = false;
+    }
+  }
+
   public dispose() {
     this.boundingBoxHelper?.removeFromParent();
     this.boundingSphereHelper?.removeFromParent();
+    this.obbHelper?.removeFromParent();
+    this.obbHelper?.dispose();
     disposeObject3D(this.object3D, this.viz?.scene);
     this.object3D.removeFromParent();
     this.viz = undefined;

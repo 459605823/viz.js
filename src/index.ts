@@ -6,6 +6,7 @@ export {ComposerController, type Options as ComposerOptions} from './composer';
 export * from './manager';
 export * from './components';
 export * from './materials';
+export * from './helpers';
 export * as THREE from 'three';
 export * as STDLIB from 'three-stdlib';
 export * as DREI from '@pmndrs/vanilla';

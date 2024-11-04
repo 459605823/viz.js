@@ -73,7 +73,6 @@
     "esno": "^4.8.0",
     "idb-keyval": "^6.2.1",
     "lint-staged": "^15.2.10",
-    "mitt": "^3.0.1",
     "simple-git-hooks": "^2.11.1",
     "stats.js": "^0.17.0",
     "three.interactive": "^1.8.0",

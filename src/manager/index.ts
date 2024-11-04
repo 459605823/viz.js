@@ -1,5 +1,4 @@
 export * from './component';
-export * from './event';
 export * from './interaction';
 export * from './gui';
 export * from './cache';
