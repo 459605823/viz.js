@@ -45,23 +45,7 @@ export default class Map {
     })
     await Promise.all(componentManager.componentPromise)
     viz.start()
-    await viz.cameraControl?.fitToBox(map.object3D, true, {
-      cover: false,
-      paddingBottom: 1,
-      paddingLeft: 1,
-      paddingRight: 1,
-      paddingTop: 1,
-    })
-    map.hide()
-    const mesh = new THREE.Mesh(
-      new THREE.TorusKnotGeometry(0.8, 0.5, 128, 128),
-      new FakeGlowMaterial({glowColor: '#8039ea'}),
-    )
-    viz.scene?.add(mesh)
-    const torusMaterial = new THREE.MeshBasicMaterial({ color: '#2babab'})
-    const torusMesh2 = new THREE.TorusKnotGeometry(0.8, 0.1, 128, 128)
-    const Torus2 = new THREE.Mesh(torusMesh2, torusMaterial)
-    viz.scene?.add(Torus2)
+    console.log(map.polygons)
   }
 
   dispose() {

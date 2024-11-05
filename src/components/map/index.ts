@@ -1,14 +1,13 @@
 import * as THREE from 'three';
 import {featureCollection, union} from '@turf/turf';
 import {mergeBufferGeometries} from 'three-stdlib';
-import type {geoProjection} from 'd3-geo';
 import type {FeatureCollection, MultiPolygon, Polygon} from 'geojson';
 import {MeshLineGeometry, MeshLineMaterial} from '../index';
 import PolygonComponent, {type PolygonOptions} from './polygon';
 import {Component} from '@/manager/component';
 
 export interface Options {
-  projection: ReturnType<typeof geoProjection>;
+  projection: (point: [number, number]) => [number, number] | null;
   geojson: FeatureCollection<Polygon | MultiPolygon>;
   depth?: number;
   outline?: boolean;
@@ -64,7 +63,7 @@ export class ExtrudeMap extends Component {
           color: new THREE.Color('#69a8c7'),
         });
       lineMat.transparent = true;
-      lineMat.depthTest = false;
+      lineMat.depthWrite = false;
       const outlineMat
         = outlineMaterial
         ?? new MeshLineMaterial({
@@ -74,7 +73,7 @@ export class ExtrudeMap extends Component {
           color: new THREE.Color('#ff0000'),
         });
       outlineMat.transparent = true;
-      outlineMat.depthTest = false;
+      outlineMat.depthWrite = false;
       const faceMat
         = faceMaterial
         ?? new THREE.MeshBasicMaterial({
