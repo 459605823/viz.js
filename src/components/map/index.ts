@@ -168,9 +168,10 @@ export class ExtrudeMap extends Component {
   }
 
   dispose() {
-    Array.from(this.polygonMap.values()).forEach((polygon) => {
+    this.polygons.forEach((polygon) => {
       polygon.dispose();
     });
     this.polygonMap.clear();
+    super.dispose();
   }
 }

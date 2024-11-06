@@ -2,7 +2,7 @@ export {default as Viz, type Options as VizOptions} from './Viz';
 export {type Options as CameraOptions} from './camera';
 export {type Options as SceneOptions} from './scene';
 export {type Options as RendererOptions} from './renderer';
-export {ComposerController, type Options as ComposerOptions} from './composer';
+export {type Options as ComposerOptions} from './composer';
 export * from './manager';
 export * from './components';
 export * from './materials';

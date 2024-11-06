@@ -118,6 +118,26 @@ export default class Polygon extends THREE.Object3D {
     return this._line;
   }
 
+  get faceMaterial() {
+    return this.userData.faceMaterial as THREE.Material;
+  }
+
+  get sideMaterial() {
+    return this.userData.sideMaterial as THREE.Material;
+  }
+
+  get lineMaterial() {
+    return this.userData.lineMaterial as MeshLineMaterial;
+  }
+
+  get props() {
+    return this.userData.properties as Record<string, any>;
+  }
+
+  get depth() {
+    return this.userData.depth as number;
+  }
+
   get center() {
     const {center, depth} = this.userData;
     return new THREE.Vector3(center.x, center.y, depth);
@@ -125,12 +145,14 @@ export default class Polygon extends THREE.Object3D {
 
   constructor(options: PolygonOptions, public scene?: THREE.Scene) {
     super();
+    const coordinates = options.coordinates;
     this.userData = {
       type: 'Polygon',
       ...options,
     };
+    delete this.userData.coordinates;
     this.name = options.name;
-    this.create(options.coordinates, options.depth);
+    this.create(coordinates, options.depth);
   }
 
   create(polygons: THREE.Vector2[][], depth: number) {
