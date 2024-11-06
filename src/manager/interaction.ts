@@ -12,6 +12,10 @@ export class InteractionManager extends Manager {
     this.im = new IM(renderer, camera, renderer.domElement);
   }
 
+  add(object: Parameters<IM['add']>[0]) {
+    this.im.add(object);
+  }
+
   update() {
     this.im.update();
   }

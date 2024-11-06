@@ -332,6 +332,18 @@ export default class Viz<
     this.animationFrames.push(callback);
   }
 
+  captureScreenshot(type = 'image/png') {
+    const canvas = this.renderer?.domElement;
+    if (!canvas)
+      return;
+    this.render(0);
+    const dataURL = canvas.toDataURL(type);
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = `screenshot.${type.split('/')[1]}`;
+    link.click();
+  }
+
   stop() {
     this.playing = false;
     this.renderer?.setAnimationLoop(null);
