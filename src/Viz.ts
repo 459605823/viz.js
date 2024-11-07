@@ -342,6 +342,7 @@ export default class Viz<
     link.href = dataURL;
     link.download = `screenshot.${type.split('/')[1]}`;
     link.click();
+    link.remove();
   }
 
   stop() {

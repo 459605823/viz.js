@@ -21,6 +21,8 @@ export class GuiManager extends Manager {
 
   pane: Pane;
 
+  needsUpdate = false;
+
   constructor() {
     super();
     const container = document.createElement('div');
@@ -136,8 +138,15 @@ export class GuiManager extends Manager {
     );
   }
 
+  refresh() {
+    this.pane.refresh();
+  }
+
   update() {
-    // this.pane.refresh();
+    if (this.needsUpdate) {
+      this.refresh();
+      this.needsUpdate = false;
+    }
   }
 
   dispose() {

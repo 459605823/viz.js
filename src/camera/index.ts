@@ -45,34 +45,32 @@ export default (options: Options) => {
 };
 
 export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
+  const position = cameraControl.getPosition(new THREE.Vector3());
   const folder = guiManager?.addFolder('Camera', {
     x: {
-      value: cameraControl.camera.position.x,
+      target: () => position,
       min: -500,
       max: 500,
       step: 0.1,
       onChange: (value) => {
-        const position = cameraControl.getPosition(new THREE.Vector3());
         cameraControl.setPosition(value, position.y, position.z);
       },
     },
     y: {
-      value: cameraControl.camera.position.y,
+      target: () => position,
       min: -500,
       max: 500,
       step: 0.1,
       onChange: (value) => {
-        const position = cameraControl.getPosition(new THREE.Vector3());
         cameraControl.setPosition(position.x, value, position.z);
       },
     },
     z: {
-      value: cameraControl.camera.position.z,
+      target: () => position,
       min: -500,
       max: 500,
       step: 0.1,
       onChange: (value) => {
-        const position = cameraControl.getPosition(new THREE.Vector3());
         cameraControl.setPosition(position.x, position.y, value);
       },
     },
@@ -98,5 +96,9 @@ export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
     },
   });
   folder.expanded = false;
+  cameraControl.addEventListener('update', () => {
+    cameraControl.getPosition(position);
+    guiManager.needsUpdate = true;
+  });
   return folder;
 }

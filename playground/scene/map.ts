@@ -1,5 +1,5 @@
 import {geoEquirectangular} from 'd3-geo'
-import {ComponentManager, ExtrudeMap, Viz, THREE, FakeGlowMaterial} from '@/index'
+import {ComponentManager, ExtrudeMap, Viz} from '@/index'
 
 const projection = geoEquirectangular()
   .center([0, 0])
@@ -45,7 +45,7 @@ export default class Map {
     })
     await Promise.all(componentManager.componentPromise)
     viz.start()
-    console.log(map.polygons)
+    viz.cameraControl?.fitToBox(map.boundingBox, false)
   }
 
   dispose() {
