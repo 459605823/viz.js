@@ -53,6 +53,16 @@ export abstract class Component extends EventDispatcher {
     );
   }
 
+  /**
+   * 获取组件的前方向
+   */
+  get forward() {
+    return this.object3D.getWorldDirection(new THREE.Vector3());
+  }
+
+  /**
+   * 获取组件的包围盒信息
+   */
   get boundingInfo() {
     return getBounds(this.object3D);
   }
