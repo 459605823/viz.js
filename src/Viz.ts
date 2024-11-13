@@ -276,7 +276,7 @@ export default class Viz<
     this.cameraControl?.update(delta);
     this.stats?.update();
     this.grid?.update(this.camera);
-    this.composerController?.composer?.render();
+    this.composerController?.render();
     this.cssRenderer.forEach((renderer) => {
       renderer.render(this.scene!, this.camera!);
     });
@@ -286,7 +286,7 @@ export default class Viz<
     this.managerMap.forEach(manager => manager.setSize(width, height));
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    this.composerController?.composer.setSize(width, height);
+    this.composerController?.setSize(width, height);
     this.cssRenderer.forEach((renderer) => {
       renderer.setSize(width, height);
     });

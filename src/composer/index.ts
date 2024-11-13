@@ -21,39 +21,32 @@ export interface Options {
 }
 
 export class ComposerController {
-  composer: EffectComposer;
+  private composer: EffectComposer;
 
   options: Options;
 
-  bloomEffect?: SelectiveBloomEffect;
+  private bloomEffect?: SelectiveBloomEffect;
 
   constructor(options: Options) {
-    const {renderer, scene, camera, bloom} = options;
+    this.options = options;
+    const {renderer, scene, camera, bloom, antialias = 'msaa', multisampling = 4} = options;
+    const {isWebGL2, maxSamples} = renderer.capabilities;
     const composer = new EffectComposer(renderer, {
       frameBufferType: THREE.HalfFloatType,
+      multisampling: isWebGL2 && antialias === 'msaa' ? Math.min(multisampling, maxSamples) : 0,
     });
-    this.options = options;
     this.composer = composer;
     composer.addPass(new RenderPass(scene, camera));
-    const effects = [this.addAAEffect()].filter(Boolean) as Effect[];
+    const effects = [] as Effect[];
+    if (antialias === 'msaa') {
+      this.composer.addPass(new CopyPass());
+    } else if (antialias === 'fxaa') {
+      effects.push(new FXAAEffect({blendFunction: BlendFunction.NORMAL}));
+    }
     if (bloom) {
       effects.push(this.addBloomEffect(bloom === true ? {} : bloom));
     }
     composer.addPass(new EffectPass(camera, ...effects));
-  }
-
-  private addAAEffect() {
-    const {renderer, antialias = 'msaa', multisampling = 4} = this.options;
-    const {isWebGL2, maxSamples} = renderer.capabilities;
-    this.composer.multisampling
-      = isWebGL2 && antialias === 'msaa'
-        ? Math.min(multisampling, maxSamples)
-        : 0;
-    if (antialias === 'msaa') {
-      return this.composer.addPass(new CopyPass());
-    } else if (antialias === 'fxaa') {
-      return new FXAAEffect({blendFunction: BlendFunction.ADD});
-    }
   }
 
   private addBloomEffect(params?: BloomEffectOptions) {
@@ -66,6 +59,7 @@ export class ComposerController {
       intensity: 4.0,
       ...params,
     });
+    effect.inverted = true;
     effect.ignoreBackground = true;
     this.bloomEffect = effect;
     return effect;
@@ -73,6 +67,14 @@ export class ComposerController {
 
   public toggleBloom(object3D: THREE.Object3D) {
     this.bloomEffect?.selection.toggle(object3D);
+  }
+
+  public render() {
+    this.composer.render();
+  }
+
+  public setSize(width: number, height: number) {
+    this.composer.setSize(width, height);
   }
 
   dispose() {
