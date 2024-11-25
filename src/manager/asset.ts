@@ -71,7 +71,7 @@ export class AssetManager extends Manager {
   }
 
   get staticPath() {
-    return this.viz?.option.staticPath || '';
+    return this.viz?.staticPath || '';
   }
 
   constructor() {

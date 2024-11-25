@@ -43,7 +43,7 @@ export interface Options {
 }
 
 const defaultOptions: Partial<Options> = {
-  staticPath: '/',
+  staticPath: '',
   dev: false,
   gui: true,
   stats: true,
@@ -79,6 +79,10 @@ export default class Viz<
   private animationFrames: Array<(delta?: number) => void> = [];
 
   private grid?: GridType;
+
+  get staticPath() {
+    return this.option.staticPath || '';
+  }
 
   get camera() {
     return this.cameraControl?.camera as THREE.PerspectiveCamera;
