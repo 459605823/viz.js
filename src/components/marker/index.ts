@@ -16,17 +16,10 @@ export interface Options {
   zIndex?: number;
 }
 
-export class Marker extends Component {
+export class Marker extends Component<Options> {
   readonly name = 'Marker';
 
-  options: Options;
-
   element?: HTMLElement;
-
-  constructor(options: Options) {
-    super(options);
-    this.options = options;
-  }
 
   create() {
     const {element, position, scale, zIndex} = this.options;

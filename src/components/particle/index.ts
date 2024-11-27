@@ -30,15 +30,8 @@ export interface Options {
   };
 }
 
-export class Particle extends Component {
+export class Particle extends Component<Options> {
   readonly name = 'Particle';
-
-  options: Options;
-
-  constructor(options: Options) {
-    super(options);
-    this.options = options;
-  }
 
   create() {
     const {sphere} = this.options;

@@ -16,12 +16,12 @@ interface ComponentOptions {
   [key: string]: any;
 }
 
-export abstract class Component extends EventDispatcher {
+export abstract class Component<T = ComponentOptions> extends EventDispatcher {
   readonly isComponent = true;
 
   readonly abstract name: string;
 
-  options: ComponentOptions = {};
+  options: T;
 
   object3D: THREE.Object3D = new THREE.Group();
 
@@ -84,7 +84,7 @@ export abstract class Component extends EventDispatcher {
     return obb;
   }
 
-  constructor(options: ComponentOptions = {}) {
+  constructor(options: T) {
     super();
     this.options = options;
   }

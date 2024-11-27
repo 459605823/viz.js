@@ -28,10 +28,8 @@ export interface Options {
   animation?: 'texture' | 'dash';
 }
 
-export class Line extends Component {
+export class Line extends Component<Options> {
   readonly name = 'Line';
-
-  options: Options;
 
   material?: MeshLineMaterial;
 
@@ -61,11 +59,6 @@ export class Line extends Component {
       return this.material.dashOffset < -this.dyingAt;
     }
     return false;
-  }
-
-  constructor(options: Options) {
-    super(options);
-    this.options = options;
   }
 
   create() {

@@ -8,17 +8,10 @@ export interface Options {
   billboardConfig?: BillboardProps;
 }
 
-export class Billboard extends Component {
+export class Billboard extends Component<Options> {
   readonly name = 'Billboard';
 
-  options: Options;
-
   billboard?: ReturnType<typeof BillboardImpl>;
-
-  constructor(options: Options) {
-    super(options);
-    this.options = options;
-  }
 
   create() {
     const {object, billboardConfig = {}} = this.options;

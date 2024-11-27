@@ -17,10 +17,8 @@ export interface Options {
   outlineMaterial?: MeshLineMaterial;
 }
 
-export class ExtrudeMap extends Component {
+export class ExtrudeMap extends Component<Options> {
   readonly name = 'ExtrudeMap';
-
-  options: Options;
 
   polygonMap: Map<string, PolygonComponent> = new Map();
 
@@ -33,12 +31,11 @@ export class ExtrudeMap extends Component {
   }
 
   constructor(options: Options) {
-    super();
-    this.options = {
+    super({
       depth: 1,
       outline: false,
       ...options,
-    };
+    });
   }
 
   create() {
