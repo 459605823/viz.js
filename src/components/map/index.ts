@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {featureCollection, union} from '@turf/turf';
+import {bbox, featureCollection, union} from '@turf/turf';
 import {mergeBufferGeometries} from 'three-stdlib';
 import type {FeatureCollection, MultiPolygon, Polygon} from 'geojson';
 import {MeshLineGeometry, MeshLineMaterial} from '../index';
@@ -94,6 +94,9 @@ export class ExtrudeMap extends Component<Options> {
     const {geojson, depth} = this.options;
     const {lineMat, faceMat, sideMat}
       = this.viz!.cacheManager.get('ExtrudeMap');
+    const [minX, minY, maxX, maxY] = bbox(geojson);
+    const min = this.projectPoint([minX, minY]);
+    const max = this.projectPoint([maxX, maxY]);
     geojson.features.forEach((feature) => {
       if (!feature.geometry || !feature.properties?.name)
         return;
@@ -108,6 +111,7 @@ export class ExtrudeMap extends Component<Options> {
         properties: feature.properties,
         name,
         center: this.projectPoint(centroid || center),
+        bbox: [min.x, min.y, max.x, max.y],
       };
       if (type === 'Polygon') {
         props.coordinates.push(this.projectPoints(coordinates[0]));

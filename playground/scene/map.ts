@@ -1,5 +1,5 @@
 import {geoEquirectangular} from 'd3-geo'
-import {ComponentManager, ExtrudeMap, Viz} from '@/index'
+import {ComponentManager, ExtrudeMap, THREE, Viz} from '@/index'
 
 const projection = geoEquirectangular()
   .center([0, 0])
@@ -29,6 +29,10 @@ export default class Map {
         type: 'json',
         url: '/geojson/world.json',
       },
+      {
+        type: 'texture',
+        url: '/uv_grid_opengl.jpg',
+      },
     ])
     this.viz = viz
   }
@@ -37,10 +41,15 @@ export default class Map {
     const viz = this.viz
     await viz.assetManager.load()
     const geojson = await viz.assetManager.getAsset('/geojson/world.json')
+    const texture = await viz.assetManager.getAsset('/uv_grid_opengl.jpg')
+    const faceMaterial = new THREE.MeshBasicMaterial({
+      map: texture,
+    })
     const map = await componentManager.draw('ExtrudeMap', {
       projection,
       depth: 0.1,
       outline: false,
+      faceMaterial,
       geojson: geojson as any,
     })
     await Promise.all(componentManager.componentPromise)
