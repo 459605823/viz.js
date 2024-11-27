@@ -3,7 +3,7 @@ import {ShaderChunk} from 'three';
 // three loop unrolling of ShaderMaterial only supports integer bounds,
 // see https://github.com/mrdoob/three.js/issues/28020
 export function unrollLoops(source: string, defines: Record<string, any>) {
-  const pattern = /#pragma unroll_loop\s+for\s*\(\s*int\s+i\s*=\s*(\w+);\s*i\s+<\s+(\w+);\s*i\s*\+\+\s*\)\s*\{\n([^}]*)\}/g;
+  const pattern = /#pragma unroll_loop\s+for\s*\(\s*int\s+i\s*=\s*(\w+);\s*i\s*<\s*(\w+);\s*i\s*\+\+\s*\)\s*\{([^}]*)\}/g;
   function replace(match: string, start: string, end: string, snippet: string) {
     let result = '';
     const s = start in defines ? defines[start] : Number.parseInt(start, 10);
