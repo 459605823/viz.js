@@ -92,7 +92,7 @@ function uvGenerator(bbox?: [number, number, number, number]) {
       const dx = vertices[indexD * 3];
       const dy = vertices[indexD * 3 + 1];
       const dz = vertices[indexD * 3 + 2];
-      if (Math.abs(ay - by) < 0.01) {
+      if (Math.abs(ay - by) < Math.abs(ax - bx)) {
         return [
           new THREE.Vector2(ax, 1 - az),
           new THREE.Vector2(bx, 1 - bz),

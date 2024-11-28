@@ -45,11 +45,17 @@ export default class Map {
     const faceMaterial = new THREE.MeshBasicMaterial({
       map: texture,
     })
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    const sideMaterial = new THREE.MeshBasicMaterial({
+      map: texture,
+    })
     const map = await componentManager.draw('ExtrudeMap', {
       projection,
       depth: 0.1,
       outline: false,
       faceMaterial,
+      sideMaterial,
       geojson: geojson as any,
     })
     await Promise.all(componentManager.componentPromise)
