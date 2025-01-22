@@ -11,3 +11,5 @@ export * as THREE from 'three';
 export * as STDLIB from 'three-stdlib';
 export * as DREI from '@pmndrs/vanilla';
 export * as UTILS from './utils';
+export {default as PolygonGeometry} from 'three-conic-polygon-geometry';
+export {default as GeoJsonGeometry} from 'three-geojson-geometry';

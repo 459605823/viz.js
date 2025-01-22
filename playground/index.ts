@@ -1,5 +1,5 @@
 import './style.css'
-import Scene from './scene/map'
+import Scene from './scene/earth'
 
 const el = document.getElementById('app')
 let scene: Scene
