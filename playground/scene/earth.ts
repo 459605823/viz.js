@@ -1,7 +1,10 @@
-import {THREE, Viz, PolygonGeometry, MeshLineGeometry, MeshLineMaterial} from '@/index'
+import {THREE, Viz, PolygonGeometry, ComponentManager, GeoMesh, MeshLineGeometry, MeshLineMaterial, STDLIB} from '@/index'
 import GeoJsonGeometry from 'three-geojson-geometry'
 import {booleanClockwise} from '@turf/turf'
 
+const componentManager = new ComponentManager({
+  GeoMesh,
+})
 export default class Map {
   viz: Viz
 
@@ -10,6 +13,9 @@ export default class Map {
       {
         dev: true,
         container: el,
+      },
+      {
+        componentManager
       }
     )
     viz.assetManager.setAsset([
@@ -40,40 +46,21 @@ export default class Map {
     const sideMaterial = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide, color: 'green'
     })
-    const materials = [sideMaterial, faceMaterial, faceMaterial]
-    const polygonMeshes: THREE.Mesh[] = [];
-    const lines: THREE.LineSegments[] = [];
     const alt = 10;
-    const {width, height} = this.viz.getSize()
-    const lineMat = new MeshLineMaterial({
-      lineWidth: 10,
-      color: '#f00',
-      sizeAttenuation: 0,
-      resolution: new THREE.Vector2(width, height),
-    })
     geojson.features.forEach(({geometry}: any) => {
-      const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
-      polygons.forEach((coords: any) => {
-        const reversedCoords = [...coords]
-        const isClockwise = booleanClockwise(coords[0])
-        console.log(coords, isClockwise)
-        if (!isClockwise) {
-          reversedCoords[0].reverse()
-        }
-        polygonMeshes.push(
-          new THREE.Mesh(
-            new PolygonGeometry(reversedCoords, alt - 1, alt, false, true, true, 10),
-            materials
-          ),
-        );
-      });
-      const lineGeo = new GeoJsonGeometry(geometry, alt);
-      const meshlineGeo = new MeshLineGeometry();
-      meshlineGeo.setPoints(lineGeo)
-      lines.push(new THREE.Mesh(meshlineGeo, lineMat));
+      componentManager.draw('GeoMesh', {
+        geojson: geometry,
+        bottomHeight: alt - 0.1,
+        topHeight: alt,
+        closeBottom: false,
+        closeTop: true,
+        includeSides: true,
+        curvatureResolution: 10,
+        faceMaterial,
+        sideMaterial,
+        bottomMaterial: faceMaterial,
+      })
     })
-    polygonMeshes.forEach(mesh => viz.scene?.add(mesh));
-    lines.forEach(line => viz.scene?.add(line));
     viz.start()
   }
 
