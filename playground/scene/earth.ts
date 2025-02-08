@@ -1,6 +1,4 @@
-import {THREE, Viz, PolygonGeometry, ComponentManager, GeoMesh, MeshLineGeometry, MeshLineMaterial, STDLIB} from '@/index'
-import GeoJsonGeometry from 'three-geojson-geometry'
-import {booleanClockwise} from '@turf/turf'
+import {THREE, Viz, ComponentManager, GeoMesh} from '@/index'
 
 const componentManager = new ComponentManager({
   GeoMesh,
@@ -50,7 +48,7 @@ export default class Map {
     geojson.features.forEach(({geometry}: any) => {
       componentManager.draw('GeoMesh', {
         geojson: geometry,
-        bottomHeight: alt - 0.1,
+        depth: 0.1,
         topHeight: alt,
         closeBottom: false,
         closeTop: true,
