@@ -44,6 +44,10 @@ export default class Map {
     const sideMaterial = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide, color: 'green'
     })
+    const borderMaterial = new THREE.LineBasicMaterial({
+      color: 'red',
+      linewidth: 10,
+    })
     const alt = 10;
     geojson.features.forEach(({geometry}: any) => {
       componentManager.draw('GeoMesh', {
@@ -57,6 +61,9 @@ export default class Map {
         faceMaterial,
         sideMaterial,
         bottomMaterial: faceMaterial,
+        borderMaterial
+      }).then((mesh) => {
+        console.log(mesh)
       })
     })
     viz.start()
