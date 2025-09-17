@@ -11,7 +11,7 @@ interface GeoJson {
 
 export interface Options {
   geojson: GeoJson;
-  topHeight: number;
+  bottomHeight: number;
   depth: number;
   closeBottom?: boolean;
   closeTop?: boolean;
@@ -37,9 +37,10 @@ export class GeoMesh extends Component<Options> {
   }
 
   create() {
-    const {geojson, sideMaterial, faceMaterial, bottomMaterial, borderMaterial, depth, topHeight, closeBottom, closeTop, includeSides, curvatureResolution} = this.options;
+    const {geojson, sideMaterial, faceMaterial, bottomMaterial, borderMaterial, depth, bottomHeight, closeBottom, closeTop, includeSides, curvatureResolution} = this.options;
     const polygons = geojson.type === 'Polygon' ? [geojson.coordinates] : geojson.coordinates;
     const materials = [sideMaterial, bottomMaterial, faceMaterial];
+    const topHeight = bottomHeight + depth;
     polygons.forEach((coords: any) => {
       const c = [...coords];
       const isClockwise = booleanClockwise(c[0]);
@@ -47,7 +48,7 @@ export class GeoMesh extends Component<Options> {
         c[0].reverse();
       }
       this.add(
-        new THREE.Mesh(new PolygonGeometry(c, topHeight - depth, topHeight, closeBottom, closeTop, includeSides, curvatureResolution), materials),
+        new THREE.Mesh(new PolygonGeometry(c, bottomHeight, topHeight, closeBottom, closeTop, includeSides, curvatureResolution), materials),
       );
       if (borderMaterial) {
         this.add(

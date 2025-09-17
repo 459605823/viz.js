@@ -53,7 +53,7 @@ export default class Map {
       componentManager.draw('GeoMesh', {
         geojson: geometry,
         depth: 0.1,
-        topHeight: alt,
+        bottomHeight: alt,
         closeBottom: false,
         closeTop: true,
         includeSides: true,
