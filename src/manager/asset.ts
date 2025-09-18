@@ -18,6 +18,7 @@ interface AssetInfo {
   url: string;
   name?: string;
   version?: string;
+  colorSpace?: THREE.ColorSpace;
 }
 
 interface AssetLoaders {
@@ -138,6 +139,10 @@ export class AssetManager extends Manager {
           (res) => {
             this.assetLoaded(url);
             if (type === 'texture' || type === 'hdr' || type === 'exr') {
+              if (type === 'texture') {
+                const texture = res as THREE.Texture;
+                texture.colorSpace = asset.colorSpace || THREE.SRGBColorSpace;
+              }
               this.textureStore.push(res as THREE.Texture);
             }
             resolve(type === 'json' ? JSON.parse(res as string) : res);

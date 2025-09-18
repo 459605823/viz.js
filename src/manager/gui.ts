@@ -1,10 +1,11 @@
+import type {Color} from 'three';
 import {Vector2, Vector3} from 'three';
 import type {FolderApi} from 'tweakpane';
 import {Pane} from 'tweakpane';
 import Manager from './base';
 
 export interface GuiParam {
-  value?: number | string | boolean | Vector2 | Vector3;
+  value?: number | string | boolean | Vector2 | Vector3 | Color;
   label?: string;
   min?: number;
   max?: number;
@@ -62,7 +63,8 @@ export class GuiManager extends Manager {
     if (isColor) {
       b = f.addBinding(params, key, {
         label: label ?? key,
-        color: {type: 'float'},
+        view: 'color',
+        color: {alpha: true},
       });
     } else if (isPoint) {
       b = this.addPoint(key, params, min, max, step, label, f);
