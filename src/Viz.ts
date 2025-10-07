@@ -76,7 +76,7 @@ export default class Viz<
 
   private resizeObserver?: ResizeObserver;
 
-  private animationFrames: Array<(delta?: number) => void> = [];
+  private animationFrames: Array<(delta: number, elapsedTime: number) => void> = [];
 
   private grid?: GridType;
 
@@ -275,8 +275,8 @@ export default class Viz<
     return target;
   }
 
-  render(delta: number) {
-    this.managerMap.forEach(manager => manager.update(delta));
+  render(delta: number, elapsedTime: number) {
+    this.managerMap.forEach(manager => manager.update(delta, elapsedTime));
     this.cameraControl?.update(delta);
     this.stats?.update();
     this.grid?.update(this.camera);
@@ -296,7 +296,7 @@ export default class Viz<
     });
   }
 
-  start(params: {fn?: (delta?: number) => void; frameRate?: number} = {}) {
+  start(params: {fn?: (delta?: number, elapsedTime?: number) => void; frameRate?: number} = {}) {
     this.playing = true;
     const {fn, frameRate} = params;
     const clock = new THREE.Clock();
@@ -304,30 +304,31 @@ export default class Viz<
     let lastTime = 0;
     this.renderer?.setAnimationLoop(() => {
       const delta = clock.getDelta();
+      const elapsedTime = clock.getElapsedTime();
       lastTime += delta;
       if (lastTime >= interval) {
-        this.render(delta);
-        fn?.(delta);
-        this.animationFrames.forEach(frame => frame(delta));
+        this.render(delta, elapsedTime);
+        fn?.(delta, elapsedTime);
+        this.animationFrames.forEach(frame => frame(delta, elapsedTime));
         lastTime = 0;
       }
     });
   }
 
   requestAnimationFrame(
-    fn: (delta?: number) => void,
+    fn: (delta: number, elapsedTime: number) => void,
     config: {once?: boolean; duration?: number} = {},
   ) {
     const {once = false, duration = Infinity} = config;
     let startTime: number;
-    const callback = (delta?: number) => {
+    const callback = (delta: number, elapsedTime: number) => {
       if (!startTime) {
         startTime = performance.now();
       }
       const currentTime = performance.now();
-      const elapsedTime = currentTime - startTime;
-      fn(delta);
-      if (once || elapsedTime > duration) {
+      const currentDuration = currentTime - startTime;
+      fn(delta, elapsedTime);
+      if (once || currentDuration > duration) {
         this.animationFrames = this.animationFrames.filter(
           fn => fn !== callback,
         );
@@ -340,7 +341,7 @@ export default class Viz<
     const canvas = this.renderer?.domElement;
     if (!canvas)
       return;
-    this.render(0);
+    this.render(0, 0);
     const dataURL = canvas.toDataURL(type);
     const link = document.createElement('a');
     link.href = dataURL;

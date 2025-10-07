@@ -65,6 +65,16 @@ export class ComposerController {
     return effect;
   }
 
+  public addPass(effect: Effect | Effect[] | EffectPass) {
+    if (effect instanceof EffectPass) {
+      return this.composer.addPass(effect);
+    }
+    if (!Array.isArray(effect)) {
+      effect = [effect];
+    }
+    this.composer.addPass(new EffectPass(this.options.camera, ...effect));
+  }
+
   public toggleBloom(object3D: THREE.Object3D) {
     this.bloomEffect?.selection.toggle(object3D);
   }

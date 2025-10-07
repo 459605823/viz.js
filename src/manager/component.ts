@@ -94,7 +94,7 @@ export abstract class Component<T = ComponentOptions> extends EventDispatcher {
   public render() {}
 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  public update(delta: number) {}
+  public update(delta: number, elapsedTime: number) {}
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   public setSize(width: number, height: number) {}
@@ -332,8 +332,8 @@ export class ComponentManager<
     this.instances = [];
   }
 
-  update(delta: number) {
-    this.instances.forEach(instance => instance.update(delta));
+  update(delta: number, elapsedTime: number) {
+    this.instances.forEach(instance => instance.update(delta, elapsedTime));
   }
 
   setSize(width: number, height: number) {

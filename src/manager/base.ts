@@ -11,7 +11,7 @@ export default abstract class Manager extends EventDispatcher {
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  update(delta?: number) {}
+  update(delta?: number, elapsedTime?: number) {}
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   setSize(width: number, height: number) {}
