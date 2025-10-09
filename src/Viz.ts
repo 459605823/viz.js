@@ -29,11 +29,20 @@ import type {KeyOf} from '@/types/utils';
 
 export interface Options {
   container: HTMLElement;
+  /**
+   * 静态资源前缀路径，会在assetManager获取资源url时统一加上这个路径
+   * @default ''
+   */
   staticPath?: string;
+  /** 是否为dev模式 @default false */
   dev?: boolean;
+  /** 是否创建guiManager，只有当dev为true时才有效 @default true */
   gui?: boolean;
+  /** 是否创建性能监视器，只有当dev为true时才有效 @default true */
   stats?: boolean;
+  /** 是否创建坐标轴，只有当dev为true时才有效 @default true */
   axis?: boolean;
+  /** 是否创建底部网格，只有当dev为true时才有效 @default true */
   grid?: boolean | GridProps;
   scene?: SceneOptions;
   renderer?: Omit<RendererOptions, 'width' | 'height' | 'dev'>;
@@ -315,6 +324,37 @@ export default class Viz<
     });
   }
 
+  /**
+   * 注册一个动画帧回调函数，该函数会在每次渲染循环中被调用
+   *
+   * 此方法允许你向渲染循环中添加自定义的动画逻辑，回调函数会接收到
+   * 时间增量和总运行时间参数，用于实现基于时间的动画效果
+   *
+   * @param fn - 动画回调函数
+   * @param fn.delta - 距离上一帧的时间增量（秒）
+   * @param fn.elapsedTime - 从动画开始到现在的总时间（秒）
+   * @param config - 配置选项
+   * @param config.once - 是否只执行一次，默认为 false
+   * @param config.duration - 执行持续时间（毫秒），超过此时间后自动移除回调，默认为无限
+   *
+   * @example
+   * ```typescript
+   * // 持续旋转一个物体
+   * viz.requestAnimationFrame((delta, elapsedTime) => {
+   *   mesh.rotation.y += delta;
+   * });
+   *
+   * // 执行一次性动画
+   * viz.requestAnimationFrame((delta) => {
+   *   console.log('执行一次');
+   * }, { once: true });
+   *
+   * // 执行 5 秒后自动停止
+   * viz.requestAnimationFrame((delta) => {
+   *   mesh.position.x = Math.sin(elapsedTime);
+   * }, { duration: 5000 });
+   * ```
+   */
   requestAnimationFrame(
     fn: (delta: number, elapsedTime: number) => void,
     config: {once?: boolean; duration?: number} = {},
