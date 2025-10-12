@@ -264,7 +264,7 @@ export class ComponentManager<
   getInstances<Y extends KeyOf<T>>(
     name: Y,
     key: string
-  ): InstanceType<T[Y]> | undefined;
+  ): InstanceType<T[Y]>[] | undefined;
   getInstances<Y extends KeyOf<T>>(
     name: Y,
     key: string[]
@@ -274,7 +274,7 @@ export class ComponentManager<
     key: string | string[] | undefined = undefined,
   ): InstanceType<T[Y]> | InstanceType<T[Y]>[] | undefined {
     if (typeof key === 'string') {
-      return this.instances.find(instance => instance.id === `${name}#${key}`);
+      return this.instances.filter(instance => instance.id === `${name}#${key}`);
     } else if (Array.isArray(key) && key.length) {
       return key
         .map(k =>

@@ -96,9 +96,5 @@ export function setGUI(guiManager: GuiManager, cameraControl: CameraControls) {
     },
   });
   folder.expanded = false;
-  cameraControl.addEventListener('update', () => {
-    cameraControl.getPosition(position);
-    guiManager.needsUpdate = true;
-  });
   return folder;
 }

@@ -51,18 +51,19 @@ export default class Map {
     const parabola = (x: number, k: number) => Math.pow(4 * x * (1 - x), k)
     const line = await componentManager.draw('Line', {
       points: curve.getPoints(100),
-      wcb: (p) => {
-        return parabola(p, 1)
-      },
+      // wcb: (p) => {
+      //   return parabola(p, 1)
+      // },
       material: {
         sizeAttenuation: 1,
-        lineWidth: 0.1,
-        color: '#fff',
-        map: texture,
-        useMap: 1,
+        lineWidth: Math.random() * 0.3 + 0.2,
+        opacity: 0.1,
+        color: 0x1350ef,
+        dashOffset: 80,
+        transparent: true,
       },
-      visibleLength: 0.8,
-      animation: 'dash',
+      // visibleLength: Math.random(),
+      // animation: 'dash',
     })
     const box = new THREE.Mesh(
       new THREE.BoxGeometry(5, 5, 5),
