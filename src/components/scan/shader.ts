@@ -1,3 +1,12 @@
+export const vertex = /* GLSL */ `
+varying vec2 vUv;
+void main(){
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+export const fragment = /* GLSL */ `
 uniform vec3 uColor;
 uniform vec2 pointNum;
 uniform float iTime;   // 0..1 循环
@@ -32,3 +41,4 @@ void main(){
 
   gl_FragColor = vec4(uColor, band);
 }
+`;

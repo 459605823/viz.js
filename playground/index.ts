@@ -1,5 +1,5 @@
 import './style.css'
-import Scene from './scene/flyline'
+import Scene from './scene/scan'
 
 const el = document.getElementById('app')
 let scene: Scene

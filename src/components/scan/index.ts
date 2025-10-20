@@ -1,5 +1,4 @@
-import fragmentShader from './shader/fragment.glsl?raw';
-import vertexShader from './shader/vertex.glsl?raw';
+import {fragment, vertex} from './shader';
 import {Component, THREE} from '@/index';
 
 export interface ScanOptions {
@@ -56,8 +55,8 @@ export class Scan extends Component<ScanOptions> {
         uDotThreshold: {value: dotSize},
       },
       transparent: true,
-      vertexShader,
-      fragmentShader,
+      vertexShader: vertex,
+      fragmentShader: fragment,
     });
     this.material = material;
     const mesh = new THREE.Mesh(geometry, material);
