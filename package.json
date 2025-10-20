@@ -1,7 +1,7 @@
 {
   "name": "@f80975/viz.js",
   "type": "module",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "packageManager": "pnpm@9.8.0",
   "author": "f80975 <wjnsail66@gmail.com>",
   "license": "MIT",
@@ -54,6 +54,7 @@
     "@tweakpane/core": "^2.0.4",
     "@types/three": "^0.164.1",
     "camera-controls": "^2.9.0",
+    "open-simplex-noise": "^2.5.0",
     "postprocessing": "^6.36.3",
     "three-conic-polygon-geometry": "^2.1.2",
     "three-geojson-geometry": "^2.1.1",
