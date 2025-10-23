@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import {CSS2DRenderer, CSS3DRenderer} from 'three-stdlib';
-import type {GuiManager} from '../manager';
 
 export interface Options {
   width: number;
@@ -8,8 +7,8 @@ export interface Options {
   dev?: boolean;
   alpha?: boolean;
   devicePixelRatio?: number;
-  toneMapping?: THREE.ToneMapping;
-  toneMappingExposure?: number;
+  clearColor?: THREE.Color;
+  clearAlpha?: number;
   colorSpace?: THREE.ColorSpace;
 }
 
@@ -21,8 +20,6 @@ export default (options: Options) => {
     alpha = false,
     colorSpace = THREE.SRGBColorSpace,
     devicePixelRatio = Math.min(2, window.devicePixelRatio),
-    toneMapping = THREE.NoToneMapping,
-    toneMappingExposure = 1,
   } = options;
   const renderer = new THREE.WebGLRenderer({
     powerPreference: 'high-performance',
@@ -35,39 +32,12 @@ export default (options: Options) => {
   renderer.outputColorSpace = colorSpace;
   renderer.setSize(width, height);
   renderer.setPixelRatio(devicePixelRatio);
-  renderer.toneMapping = toneMapping;
-  renderer.toneMappingExposure = toneMappingExposure;
+  renderer.toneMapping = THREE.NoToneMapping;
+  if (options.clearColor !== undefined) {
+    renderer.setClearColor(options.clearColor, options.clearAlpha ?? 1);
+  }
   return renderer;
 };
-
-export function setGUI(guiManager: GuiManager, renderer: THREE.WebGLRenderer) {
-  const folder = guiManager?.addFolder('Renderer', {
-    toneMapping: {
-      value: renderer.toneMapping,
-      options: [
-        {text: 'None', value: THREE.NoToneMapping},
-        {text: 'Linear', value: THREE.LinearToneMapping},
-        {text: 'Reinhard', value: THREE.ReinhardToneMapping},
-        {text: 'Cineon', value: THREE.CineonToneMapping},
-        {text: 'ACESFilmic', value: THREE.ACESFilmicToneMapping},
-      ],
-      onChange: (value) => {
-        renderer.toneMapping = value;
-      },
-    },
-    toneMappingExposure: {
-      value: renderer.toneMappingExposure,
-      min: 0,
-      max: 2,
-      step: 0.01,
-      onChange: (value) => {
-        renderer.toneMappingExposure = value;
-      },
-    },
-  });
-  folder.expanded = false;
-  return folder;
-}
 
 export function createCSS2DRenderer(width: number, height: number) {
   const renderer = new CSS2DRenderer();

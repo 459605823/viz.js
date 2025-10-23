@@ -8,6 +8,8 @@ import {
   FXAAEffect,
   RenderPass,
   SelectiveBloomEffect,
+  ToneMappingEffect,
+  type ToneMappingMode,
 } from 'postprocessing';
 import * as THREE from 'three';
 
@@ -18,18 +20,23 @@ export interface Options {
   antialias?: 'msaa' | 'fxaa';
   multisampling?: number;
   bloom?: boolean | BloomEffectOptions;
+  toneMapping?: ConstructorParameters<typeof ToneMappingEffect>[0] & {
+    mode: ToneMappingMode;
+  };
 }
 
 export class ComposerController {
-  private composer: EffectComposer;
+  composer: EffectComposer;
 
   options: Options;
 
-  private bloomEffect?: SelectiveBloomEffect;
+  bloomEffect?: SelectiveBloomEffect;
+
+  passCount = 0;
 
   constructor(options: Options) {
     this.options = options;
-    const {renderer, scene, camera, bloom, antialias = 'msaa', multisampling = 4} = options;
+    const {renderer, scene, camera, bloom, antialias = 'msaa', multisampling = 4, toneMapping} = options;
     const {isWebGL2, maxSamples} = renderer.capabilities;
     const composer = new EffectComposer(renderer, {
       frameBufferType: THREE.HalfFloatType,
@@ -37,28 +44,30 @@ export class ComposerController {
     });
     this.composer = composer;
     composer.addPass(new RenderPass(scene, camera));
+    this.passCount++;
     const effects = [] as Effect[];
     if (antialias === 'msaa') {
       this.composer.addPass(new CopyPass());
+      this.passCount++;
     } else if (antialias === 'fxaa') {
       effects.push(new FXAAEffect({blendFunction: BlendFunction.NORMAL}));
     }
     if (bloom) {
       effects.push(this.addBloomEffect(bloom === true ? {} : bloom));
     }
-    composer.addPass(new EffectPass(camera, ...effects));
+    if (toneMapping) {
+      effects.push(new ToneMappingEffect({
+        ...toneMapping,
+      }));
+    }
+    const effectPass = new EffectPass(camera, ...effects);
+    composer.addPass(effectPass);
+    this.passCount++;
   }
 
   private addBloomEffect(params?: BloomEffectOptions) {
     const {scene, camera} = this.options;
-    const effect = new SelectiveBloomEffect(scene, camera, {
-      blendFunction: BlendFunction.ADD,
-      luminanceThreshold: 0.3,
-      luminanceSmoothing: 0.2,
-      mipmapBlur: true,
-      intensity: 4.0,
-      ...params,
-    });
+    const effect = new SelectiveBloomEffect(scene, camera, params);
     effect.inverted = true;
     effect.ignoreBackground = true;
     this.bloomEffect = effect;
@@ -67,12 +76,17 @@ export class ComposerController {
 
   public addPass(effect: Effect | Effect[] | EffectPass) {
     if (effect instanceof EffectPass) {
-      return this.composer.addPass(effect);
+      this.composer.addPass(effect, this.passCount - 1);
+      this.passCount++;
+      return effect;
     }
     if (!Array.isArray(effect)) {
       effect = [effect];
     }
-    this.composer.addPass(new EffectPass(this.options.camera, ...effect));
+    const effectPass = new EffectPass(this.options.camera, ...effect);
+    this.composer.addPass(effectPass, this.passCount - 1);
+    this.passCount++;
+    return effectPass;
   }
 
   public toggleBloom(object3D: THREE.Object3D) {

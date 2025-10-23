@@ -33,6 +33,7 @@ export default (options: Options) => {
     camera.setFocalLength(options.focalLength);
   }
   const cameraControls = new CameraControls(camera, domElement);
+  cameraControls.dollySpeed = 0.5;
   cameraControls.setLookAt(
     position.x,
     position.y,

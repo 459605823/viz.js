@@ -249,10 +249,10 @@ export class ComponentManager<
    * const allBillboards = componentManager.getInstances('Billboard');
    * console.log(`共有 ${allBillboards.length} 个 Billboard 实例`);
    *
-   * // 获取具有特定 key 的单个实例
+   * // 获取具有特定 key 的实例
    * const playerMarker = componentManager.getInstances('Billboard', 'player');
-   * if (playerMarker) {
-   *   playerMarker.show();
+   * if (playerMarker.length > 0) {
+   *   playerMarker[0].show();
    * }
    *
    * // 获取具有多个 key 的实例数组

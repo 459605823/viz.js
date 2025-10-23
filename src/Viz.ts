@@ -7,7 +7,6 @@ import createScene, {type Options as SceneOptions} from './scene';
 import createRenderer, {
   type Options as RendererOptions,
   createCSSRenderer,
-  setGUI as setRendererGUI,
 } from './renderer';
 import createCamera, {
   type Options as CameraOptions,
@@ -227,7 +226,6 @@ export default class Viz<
         scene.add(gridIns.mesh);
       }
       if (this.guiManager) {
-        setRendererGUI(this.guiManager, renderer);
         setCameraGUI(this.guiManager, cameraControl);
       }
 
