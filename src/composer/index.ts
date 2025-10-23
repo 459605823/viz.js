@@ -60,9 +60,11 @@ export class ComposerController {
         ...toneMapping,
       }));
     }
-    const effectPass = new EffectPass(camera, ...effects);
-    composer.addPass(effectPass);
-    this.passCount++;
+    if (effects.length) {
+      const effectPass = new EffectPass(camera, ...effects);
+      composer.addPass(effectPass);
+      this.passCount++;
+    }
   }
 
   private addBloomEffect(params?: BloomEffectOptions) {
@@ -74,9 +76,12 @@ export class ComposerController {
     return effect;
   }
 
-  public addPass(effect: Effect | Effect[] | EffectPass) {
+  public addPass(effect: Effect | Effect[] | EffectPass, index?: number) {
+    // if toneMapping is enabled, always add before the last pass
+    // because toneMapping should at the end of the pipeline.
+    index = this.options.toneMapping ? this.passCount - 1 : index;
     if (effect instanceof EffectPass) {
-      this.composer.addPass(effect, this.passCount - 1);
+      this.composer.addPass(effect, index);
       this.passCount++;
       return effect;
     }
@@ -84,7 +89,7 @@ export class ComposerController {
       effect = [effect];
     }
     const effectPass = new EffectPass(this.options.camera, ...effect);
-    this.composer.addPass(effectPass, this.passCount - 1);
+    this.composer.addPass(effectPass, index);
     this.passCount++;
     return effectPass;
   }
