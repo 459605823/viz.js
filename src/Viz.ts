@@ -163,7 +163,7 @@ export default class Viz<
     this.scene = scene;
     // create renderer
     const {width, height} = this.getSize();
-    const renderer = createRenderer({...rendererOptions, dev, width, height});
+    const renderer = createRenderer({...rendererOptions, dev, width, height, postProcess: !!composerOptions});
     container.appendChild(renderer.domElement);
     this.renderer = renderer;
     this.cssRenderer = createCSSRenderer(width, height, cssRenderer);
@@ -178,13 +178,15 @@ export default class Viz<
       ...cameraOptions,
     });
     this.cameraControl = cameraControl;
-    // create composer
-    this.composerController = new ComposerController({
-      renderer,
-      scene,
-      camera: cameraControl.camera,
-      ...composerOptions,
-    });
+    if (composerOptions) {
+      // create composer
+      this.composerController = new ComposerController({
+        renderer,
+        scene,
+        camera: cameraControl.camera,
+        ...composerOptions,
+      });
+    }
     // handle resize
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -287,7 +289,11 @@ export default class Viz<
     this.cameraControl?.update(delta);
     this.stats?.update();
     this.grid?.update(this.camera);
-    this.composerController?.render();
+    if (this.composerController) {
+      this.composerController.render();
+    } else {
+      this.renderer?.render(this.scene!, this.camera!);
+    }
     this.cssRenderer.forEach((renderer) => {
       renderer.render(this.scene!, this.camera!);
     });
@@ -297,7 +303,11 @@ export default class Viz<
     this.managerMap.forEach(manager => manager.setSize(width, height));
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    this.composerController?.setSize(width, height);
+    if (this.composerController) {
+      this.composerController.setSize(width, height);
+    } else {
+      this.renderer?.setSize(width, height);
+    }
     this.cssRenderer.forEach((renderer) => {
       renderer.setSize(width, height);
     });

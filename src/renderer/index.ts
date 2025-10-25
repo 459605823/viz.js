@@ -10,6 +10,8 @@ export interface Options {
   clearColor?: THREE.Color;
   clearAlpha?: number;
   colorSpace?: THREE.ColorSpace;
+  antialias?: boolean;
+  postProcess?: boolean;
 }
 
 export default (options: Options) => {
@@ -20,13 +22,15 @@ export default (options: Options) => {
     alpha = false,
     colorSpace = THREE.SRGBColorSpace,
     devicePixelRatio = Math.min(2, window.devicePixelRatio),
+    antialias = true,
+    postProcess = false,
   } = options;
   const renderer = new THREE.WebGLRenderer({
     powerPreference: 'high-performance',
     alpha,
-    antialias: false,
+    antialias: postProcess ? false : antialias,
     stencil: false,
-    depth: false,
+    depth: !postProcess,
   });
   renderer.debug.checkShaderErrors = dev ?? true;
   renderer.outputColorSpace = colorSpace;

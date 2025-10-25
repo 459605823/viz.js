@@ -6,7 +6,7 @@ import type {MeshLineMaterialParameters} from './MeshLineMaterial';
 import {MeshLineMaterial} from './MeshLineMaterial';
 import {Component} from '@/manager/component';
 
-type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution' | 'dashArray' | 'dashRatio'> & {
+type MaterialParameters = Omit<MeshLineMaterialParameters, 'resolution'> & {
   blending?: THREE.Blending;
   transparent?: boolean;
 };
@@ -68,15 +68,16 @@ export class Line extends Component<Options> {
       material: materialParams,
       pickable,
       useCache,
-      visibleLength = 1,
+      visibleLength,
       animation,
     } = this.options;
     const {width, height} = this.viz!.getSize()!;
     const geometry = new MeshLineGeometry();
     geometry.setPoints(points, typeof wcb === 'string' ? wcbs[wcb] : wcb);
-    const dashParams = animation === 'dash'
+    const dashParams = animation === 'dash' && visibleLength !== undefined
       ? {
         // Here 2 mean a cash is 2 time longer that the original length
+          useDash: 1,
           dashArray: 2,
           dashRatio: 1 - (visibleLength * 0.5),
         }
@@ -129,14 +130,20 @@ export class Line extends Component<Options> {
     }
   }
 
+  setWaveTime(time: number) {
+    if (this.material) {
+      this.material.uniforms.time.value = time;
+    }
+  }
+
   update() {
     if (!this.material)
       return;
     const {animation, speed = 0.01} = this.options;
     if (animation === 'dash') {
-      this.material.dashOffset -= speed;
+      this.material.dashOffset += speed;
     } else if (animation === 'texture') {
-      this.material.offset.x -= speed;
+      this.material.offset.x += speed;
     }
   }
 

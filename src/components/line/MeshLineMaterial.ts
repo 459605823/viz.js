@@ -17,6 +17,10 @@ const vertexShader = /* glsl */ `
   uniform vec3 color;
   uniform float opacity;
   uniform float sizeAttenuation;
+  uniform float time;
+  uniform float animationSpeed;
+  uniform float waveFrequency;
+  uniform float waveAmplitude;
 
   varying vec2 vUV;
   varying vec4 vColor;
@@ -34,8 +38,11 @@ const vertexShader = /* glsl */ `
     vUV = uv;
     vCounters = counters;
 
+    vec3 animatedPosition = position;
+    animatedPosition.y -= (sin(time * animationSpeed + lineWidth + position.y / waveFrequency + position.x / waveFrequency) * waveAmplitude + waveAmplitude) * position.y;
+
     mat4 m = projectionMatrix * modelViewMatrix;
-    vec4 finalPosition = m * vec4(position, 1.0) * aspect;
+    vec4 finalPosition = m * vec4(animatedPosition, 1.0) * aspect;
     vec4 prevPos = m * vec4(previous, 1.0);
     vec4 nextPos = m * vec4(next, 1.0);
 
@@ -93,6 +100,7 @@ const fragmentShader = /* glsl */ `
   uniform float useMap;
   uniform float useAlphaMap;
   uniform float useDash;
+  uniform float useFade;
   uniform float dashArray;
   uniform float dashOffset;
   uniform float dashRatio;
@@ -113,7 +121,21 @@ const fragmentShader = /* glsl */ `
     if (useMap == 1.) diffuseColor *= texture2D(map, vUV * repeat + offset);
     if (useAlphaMap == 1.) diffuseColor.a *= texture2D(alphaMap, vUV * repeat + offset).a;
     if (diffuseColor.a < alphaTest) discard;
-    if (useDash == 1.) diffuseColor.a *= ceil(mod(vCounters + dashOffset, dashArray) - (dashArray * dashRatio));
+    if (useDash == 1.) {
+      if (useFade == 1.) {
+        float dashPos = mod(vCounters + dashOffset, dashArray);
+        float solidLength = dashArray * dashRatio;
+        float isInSolid = step(dashPos, solidLength);
+        if (isInSolid > 0.5) {
+          float t = dashPos / solidLength;
+          diffuseColor.a *= (1.0 - t);
+        } else {
+          diffuseColor.a = 0.0;
+        }
+      } else {
+        diffuseColor.a *= ceil(mod(vCounters + dashOffset, dashArray) - (dashArray * dashRatio));
+      }
+    }
     diffuseColor.a *= step(vCounters, visibility);
     #include <clipping_planes_fragment>
     gl_FragColor = diffuseColor;
@@ -138,11 +160,16 @@ export interface MeshLineMaterialParameters {
   dashOffset?: number;
   dashRatio?: number;
   useDash?: number;
+  useFade?: number;
   useGradient?: number;
   visibility?: number;
   alphaTest?: number;
   repeat?: THREE.Vector2;
   offset?: THREE.Vector2;
+  time?: number;
+  animationSpeed?: number;
+  waveFrequency?: number;
+  waveAmplitude?: number;
 }
 
 export class MeshLineMaterial
@@ -161,10 +188,15 @@ export class MeshLineMaterial
   dashOffset!: number;
   dashRatio!: number;
   useDash!: number;
+  useFade!: number;
   useGradient!: number;
   visibility!: number;
   repeat!: THREE.Vector2;
   offset!: THREE.Vector2;
+  time!: number;
+  animationSpeed!: number;
+  waveFrequency!: number;
+  waveAmplitude!: number;
 
   constructor(parameters: MeshLineMaterialParameters) {
     super({
@@ -186,11 +218,16 @@ export class MeshLineMaterial
         dashOffset: {value: 0},
         dashRatio: {value: 0.5},
         useDash: {value: 0},
+        useFade: {value: 0},
         useGradient: {value: 0},
         visibility: {value: 1},
         alphaTest: {value: 0},
         repeat: {value: new THREE.Vector2(1, 1)},
         offset: {value: new THREE.Vector2(0, 0)},
+        time: {value: 0},
+        animationSpeed: {value: 0.5},
+        waveFrequency: {value: 10},
+        waveAmplitude: {value: 0.5},
       },
       vertexShader,
       fragmentShader,
@@ -288,6 +325,15 @@ export class MeshLineMaterial
           this.uniforms.sizeAttenuation.value = value;
         },
       },
+      time: {
+        enumerable: true,
+        get() {
+          return this.uniforms.time.value;
+        },
+        set(value) {
+          this.uniforms.time.value = value;
+        },
+      },
       dashArray: {
         enumerable: true,
         get() {
@@ -323,6 +369,15 @@ export class MeshLineMaterial
         },
         set(value) {
           this.uniforms.useDash.value = value;
+        },
+      },
+      useFade: {
+        enumerable: true,
+        get() {
+          return this.uniforms.useFade.value;
+        },
+        set(value) {
+          this.uniforms.useFade.value = value;
         },
       },
       useGradient: {
@@ -370,6 +425,33 @@ export class MeshLineMaterial
           this.uniforms.offset.value.copy(value);
         },
       },
+      animationSpeed: {
+        enumerable: true,
+        get() {
+          return this.uniforms.animationSpeed.value;
+        },
+        set(value) {
+          this.uniforms.animationSpeed.value = value;
+        },
+      },
+      waveFrequency: {
+        enumerable: true,
+        get() {
+          return this.uniforms.waveFrequency.value;
+        },
+        set(value) {
+          this.uniforms.waveFrequency.value = value;
+        },
+      },
+      waveAmplitude: {
+        enumerable: true,
+        get() {
+          return this.uniforms.waveAmplitude.value;
+        },
+        set(value) {
+          this.uniforms.waveAmplitude.value = value;
+        },
+      },
     });
     this.setValues(parameters);
   }
@@ -386,15 +468,20 @@ export class MeshLineMaterial
     this.opacity = source.opacity;
     this.resolution.copy(source.resolution);
     this.sizeAttenuation = source.sizeAttenuation;
+    this.time = source.time;
     this.dashArray = source.dashArray;
     this.dashOffset = source.dashOffset;
     this.dashRatio = source.dashRatio;
     this.useDash = source.useDash;
+    this.useFade = source.useFade;
     this.useGradient = source.useGradient;
     this.visibility = source.visibility;
     this.alphaTest = source.alphaTest;
     this.repeat.copy(source.repeat);
     this.offset.copy(source.offset);
+    this.animationSpeed = source.animationSpeed;
+    this.waveFrequency = source.waveFrequency;
+    this.waveAmplitude = source.waveAmplitude;
     return this;
   }
 }
