@@ -17,6 +17,7 @@ const vertexShader = /* glsl */ `
   uniform vec3 color;
   uniform float opacity;
   uniform float sizeAttenuation;
+  uniform float useWave;
   uniform float time;
   uniform float animationSpeed;
   uniform float waveFrequency;
@@ -37,12 +38,15 @@ const vertexShader = /* glsl */ `
     vColor = vec4(color, opacity);
     vUV = uv;
     vCounters = counters;
-
-    vec3 animatedPosition = position;
-    animatedPosition.y -= (sin(time * animationSpeed + lineWidth + position.y / waveFrequency + position.x / waveFrequency) * waveAmplitude + waveAmplitude) * position.y;
-
     mat4 m = projectionMatrix * modelViewMatrix;
-    vec4 finalPosition = m * vec4(animatedPosition, 1.0) * aspect;
+    vec4 finalPosition = m * vec4(position, 1.0) * aspect;
+
+    if (useWave == 1.) {
+      vec3 wavePosition = position;
+      wavePosition.y -= (sin(time * animationSpeed + lineWidth + position.y / waveFrequency + position.x / waveFrequency) * waveAmplitude + waveAmplitude) * position.y;
+      finalPosition = m * vec4(wavePosition, 1.0) * aspect;
+    }
+
     vec4 prevPos = m * vec4(previous, 1.0);
     vec4 nextPos = m * vec4(next, 1.0);
 
@@ -161,6 +165,7 @@ export interface MeshLineMaterialParameters {
   dashRatio?: number;
   useDash?: number;
   useFade?: number;
+  useWave?: number;
   useGradient?: number;
   visibility?: number;
   alphaTest?: number;
@@ -189,6 +194,7 @@ export class MeshLineMaterial
   dashRatio!: number;
   useDash!: number;
   useFade!: number;
+  useWave!: number;
   useGradient!: number;
   visibility!: number;
   repeat!: THREE.Vector2;
@@ -219,6 +225,7 @@ export class MeshLineMaterial
         dashRatio: {value: 0.5},
         useDash: {value: 0},
         useFade: {value: 0},
+        useWave: {value: 0},
         useGradient: {value: 0},
         visibility: {value: 1},
         alphaTest: {value: 0},
@@ -380,6 +387,15 @@ export class MeshLineMaterial
           this.uniforms.useFade.value = value;
         },
       },
+      useWave: {
+        enumerable: true,
+        get() {
+          return this.uniforms.useWave.value;
+        },
+        set(value) {
+          this.uniforms.useWave.value = value;
+        },
+      },
       useGradient: {
         enumerable: true,
         get() {
@@ -474,6 +490,7 @@ export class MeshLineMaterial
     this.dashRatio = source.dashRatio;
     this.useDash = source.useDash;
     this.useFade = source.useFade;
+    this.useWave = source.useWave;
     this.useGradient = source.useGradient;
     this.visibility = source.visibility;
     this.alphaTest = source.alphaTest;
