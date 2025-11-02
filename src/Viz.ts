@@ -84,7 +84,7 @@ export default class Viz<
 
   private resizeObserver?: ResizeObserver;
 
-  private animationFrames: Array<(delta: number, elapsedTime: number) => void> = [];
+  private animationFrames: Array<{fn: (delta: number, elapsedTime: number) => void; order: number}> = [];
 
   private grid?: GridType;
 
@@ -326,7 +326,7 @@ export default class Viz<
       if (lastTime >= interval) {
         this.render(delta, elapsedTime);
         fn?.(delta, elapsedTime);
-        this.animationFrames.forEach(frame => frame(delta, elapsedTime));
+        this.animationFrames.forEach(frame => frame.fn(delta, elapsedTime));
         lastTime = 0;
       }
     });
@@ -344,6 +344,7 @@ export default class Viz<
    * @param config - 配置选项
    * @param config.once - 是否只执行一次，默认为 false
    * @param config.duration - 执行持续时间（毫秒），超过此时间后自动移除回调，默认为无限
+   * @param config.order - 执行顺序，数值越小越先执行，默认为 0
    *
    * @example
    * ```typescript
@@ -361,13 +362,22 @@ export default class Viz<
    * viz.requestAnimationFrame((delta) => {
    *   mesh.position.x = Math.sin(elapsedTime);
    * }, { duration: 5000 });
+   *
+   * // 按顺序执行（order越小越先执行）
+   * viz.requestAnimationFrame(() => {
+   *   console.log('第二个执行');
+   * }, { order: 10 });
+   *
+   * viz.requestAnimationFrame(() => {
+   *   console.log('第一个执行');
+   * }, { order: 5 });
    * ```
    */
   requestAnimationFrame(
     fn: (delta: number, elapsedTime: number) => void,
-    config: {once?: boolean; duration?: number} = {},
+    config: {once?: boolean; duration?: number; order?: number} = {},
   ) {
-    const {once = false, duration = Infinity} = config;
+    const {once = false, duration = Infinity, order = 0} = config;
     let startTime: number;
     const callback = (delta: number, elapsedTime: number) => {
       if (!startTime) {
@@ -378,11 +388,19 @@ export default class Viz<
       fn(delta, elapsedTime);
       if (once || currentDuration > duration) {
         this.animationFrames = this.animationFrames.filter(
-          fn => fn !== callback,
+          item => item.fn !== callback,
         );
       }
     };
-    this.animationFrames.push(callback);
+
+    // 插入到正确的位置以保持排序
+    const frameItem = {fn: callback, order};
+    const insertIndex = this.animationFrames.findIndex(item => item.order > order);
+    if (insertIndex === -1) {
+      this.animationFrames.push(frameItem);
+    } else {
+      this.animationFrames.splice(insertIndex, 0, frameItem);
+    }
   }
 
   captureScreenshot(type = 'image/png') {
