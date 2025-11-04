@@ -88,6 +88,8 @@ export default class Viz<
 
   private grid?: GridType;
 
+  private clock = new THREE.Clock(false); // 在实例级别创建 clock，autoStart 为 false
+
   get staticPath() {
     return this.option.staticPath || '';
   }
@@ -313,15 +315,46 @@ export default class Viz<
     });
   }
 
+  /**
+   * 启动渲染循环
+   *
+   * 开始 Three.js 的渲染循环。支持自定义帧率和每帧回调函数。
+   * 可以多次调用 stop() 和 start() 来暂停和恢复渲染，时间会保持连续。
+   *
+   * @param params - 启动参数配置
+   * @param params.fn - 可选的每帧回调函数，会在每帧渲染后执行
+   * @param params.frameRate - 可选的目标帧率限制，例如设置为 30 表示最高 30fps
+   *
+   * @example
+   * ```typescript
+   * // 基本启动
+   * viz.start();
+   *
+   * // 带每帧回调
+   * viz.start({
+   *   fn: (delta, elapsedTime) => {
+   *     console.log(`帧时间: ${delta}s, 总时间: ${elapsedTime}s`);
+   *   }
+   * });
+   *
+   * // 限制帧率为 30fps
+   * viz.start({ frameRate: 30 });
+   *
+   * // 暂停和恢复
+   * viz.start();
+   * setTimeout(() => viz.stop(), 2000);  // 2秒后暂停
+   * setTimeout(() => viz.start(), 5000); // 5秒后恢复，时间会继续累积
+   * ```
+   */
   start(params: {fn?: (delta?: number, elapsedTime?: number) => void; frameRate?: number} = {}) {
     this.playing = true;
     const {fn, frameRate} = params;
-    const clock = new THREE.Clock();
+    this.clock.start();
     const interval = frameRate ? 1 / frameRate : 0;
     let lastTime = 0;
     this.renderer?.setAnimationLoop(() => {
-      const delta = clock.getDelta();
-      const elapsedTime = clock.getElapsedTime();
+      const delta = this.clock.getDelta();
+      const elapsedTime = this.clock.getElapsedTime();
       lastTime += delta;
       if (lastTime >= interval) {
         this.render(delta, elapsedTime);
@@ -378,15 +411,20 @@ export default class Viz<
     config: {once?: boolean; duration?: number; order?: number} = {},
   ) {
     const {once = false, duration = Infinity, order = 0} = config;
-    let startTime: number;
+    let startTime: number | undefined;
+    let accumulatedTime = 0; // 累积的运行时间（不包括暂停时间）
+
     const callback = (delta: number, elapsedTime: number) => {
       if (!startTime) {
         startTime = performance.now();
       }
-      const currentTime = performance.now();
-      const currentDuration = currentTime - startTime;
+
+      // 累加实际运行时间
+      accumulatedTime += delta * 1000; // delta 是秒，转换为毫秒
+
       fn(delta, elapsedTime);
-      if (once || currentDuration > duration) {
+
+      if (once || accumulatedTime > duration) {
         this.animationFrames = this.animationFrames.filter(
           item => item.fn !== callback,
         );
@@ -416,10 +454,45 @@ export default class Viz<
     link.remove();
   }
 
+  /**
+   * 暂停渲染循环
+   *
+   * 停止 Three.js 的渲染循环，暂停所有动画和渲染。适用于需要临时停止渲染的场景，
+   * 例如切换到全屏显示其他内容时。可以通过再次调用 start() 来恢复渲染，
+   * 时间会保持连续，不会重置。
+   *
+   * @example
+   * ```typescript
+   * // 基本暂停
+   * viz.stop();
+   *
+   * // 暂停后恢复
+   * viz.stop();
+   * // ... 显示其他内容，例如全屏视频或UI
+   * viz.start(); // 恢复渲染，时间继续累积
+   *
+   * // 实际使用场景：切换全屏模式
+   * function enterFullscreenMode() {
+   *   viz.stop(); // 暂停3D渲染
+   *   showFullscreenUI(); // 显示全屏UI
+   * }
+   *
+   * function exitFullscreenMode() {
+   *   hideFullscreenUI();
+   *   viz.start(); // 恢复3D渲染
+   * }
+   * ```
+   *
+   * @remarks
+   * - 调用 stop() 后，playing 状态会设置为 false
+   * - 内部的 THREE.Clock 会停止计时，不会累积暂停期间的时间
+   * - 通过 requestAnimationFrame() 注册的回调不会被移除，恢复后会继续执行
+   * - requestAnimationFrame() 的 duration 配置只计算实际运行时间，不包括暂停时间
+   */
   stop() {
     this.playing = false;
     this.renderer?.setAnimationLoop(null);
-    this.animationFrames.length = 0;
+    this.clock.stop(); // 停止 clock
   }
 
   dispose() {
