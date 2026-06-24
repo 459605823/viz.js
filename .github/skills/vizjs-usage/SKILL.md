@@ -12,21 +12,21 @@ viz.js is a high-level 3D visualization framework built on Three.js. Always read
 ### 1. Initialize Viz
 
 ```typescript
-import {Viz, ComponentManager, THREE} from '@/index';
+import {ComponentManager, THREE, Viz} from '@/index';
 
 // Register only the components you need
 const componentManager = new ComponentManager({Line, ExtrudeMap});
 
 const viz = new Viz(
   {
-    container: el,           // HTMLElement
-    dev: true,               // enables axes, grid, stats, GuiManager
-    staticPath: '/assets/',  // prefix for all asset URLs
+    container: el, // HTMLElement
+    dev: true, // enables axes, grid, stats, GuiManager
+    staticPath: '/assets/', // prefix for all asset URLs
     scene: {background: new THREE.Color('#000')},
     renderer: {alpha: false},
     camera: {/* CameraOptions */},
   },
-  {componentManager},        // register custom managers here
+  {componentManager}, // register custom managers here
 );
 ```
 
@@ -49,11 +49,11 @@ const viz = new Viz(
 ### 2. Start the Render Loop
 
 ```typescript
-viz.start();                  // basic start
+viz.start(); // basic start
 
 viz.start({
-  fn: (delta, elapsedTime) => { /* per-frame logic */ },
-  frameRate: 30,              // cap at 30 fps
+  fn: (delta, elapsedTime) => {/* per-frame logic */},
+  frameRate: 30, // cap at 30 fps
 });
 
 // Add callbacks after start()
@@ -68,10 +68,10 @@ viz.requestAnimationFrame((delta, elapsedTime) => {
 
 ```typescript
 viz.assetManager.setAsset([
-  {type: 'json',    url: '/geojson/world.json'},
+  {type: 'json', url: '/geojson/world.json'},
   {type: 'texture', url: '/textures/earth.jpg'},
-  {type: 'gltf',   url: '/models/city.glb'},
-  {type: 'hdr',    url: '/env/sunset.hdr', version: '1.0.0'}, // cached in IndexedDB
+  {type: 'gltf', url: '/models/city.glb'},
+  {type: 'hdr', url: '/env/sunset.hdr', version: '1.0.0'}, // cached in IndexedDB
 ]);
 
 await viz.assetManager.load();
@@ -223,7 +223,7 @@ Both `Viz` and `Component` extend `EventDispatcher`:
 this.emit('ready', {data: 123});
 
 // Listen
-viz.on('ready', (payload) => console.log(payload.data));
+viz.on('ready', payload => console.log(payload.data));
 component.on('click', handler);
 ```
 
